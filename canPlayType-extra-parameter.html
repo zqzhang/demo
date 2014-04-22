@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>HTMLMediaElement: canPlayType(type) with extra paramenter</title>
+<link rel="help" href="http://www.whatwg.org/specs/web-apps/current-work/multipage/the-video-element.html#dom-navigator-canplaytype">
+<script src="support/testharness.js"></script>
+<script src="support/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+var extraParam = [
+  "",
+  " foo ",
+  "http://site.example/",
+  undefined,
+  7,
+  1.5,
+  true,
+  false,
+  {"test": 6},
+  NaN,
+  +Infinity,
+  -Infinity,
+  "\0",
+  null,
+  {"toString":function(){return "test-toString";}},
+  {"valueOf":function(){return "test-valueOf";}, toString:null}
+];
+
+var type = "video/mp4";
+
+test(function() {
+  extraParam.forEach(function (ext) {
+    test(function () {
+      try {
+        var canPlay = document.createElement('audio').canPlayType(type, ext);
+        assert_equals(canPlay, document.createElement('video').canPlayType(type, ext),
+                      'audio.canPlayType() and video.canPlayType() agree');
+        assert_in_array(canPlay, ['', 'maybe', 'probably'],
+                        'return value is one of "", "maybe" and "probably"');
+      } catch (e) {
+        if (e && e.name && e.message)
+          assert_unreached("Exception (" + e.name + ": " + e.message + ")");
+        else if (e && e.message)
+          assert_unreached("Exception (" + e.message + ")");
+        else
+          assert_unreached("Exception");
+      }
+    }, "canPlayType(" + type + ", " + ext +")");
+  });
+});
+</script>
