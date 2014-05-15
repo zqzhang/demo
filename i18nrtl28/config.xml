@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?><widget height="500" id="i18nrtl28:" width="500" xmlns="http://www.w3.org/ns/widgets" xmlns:tizen="http://tizen.org/ns/widgets">
+    <name>i18nrtl28</name>
+    <content dir="rtl" encoding="iso-8859-1" src="index.htm"/>
+<tizen:application id="TiUyypvXWP.i18nrtl28" package="TiUyypvXWP" required_version="2.1"/></widget>
