@@ -1,0 +1,41 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>RTCPeerConnection.createDataChannel() with space inside label</title>
+<script src="../support/testharness.js"></script>
+<script src="../support/testharnessreport.js"></script>
+
+<div id="log"></div>
+<script>
+test(function () {
+  window.RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection || window.mozRTCPeerConnection;
+  assert_not_equals(window.RTCPeerConnection, undefined);
+
+  try {
+    var pc = new window.RTCPeerConnection(null, null);
+    assert_not_equals(pc, null);
+    assert_not_equals(pc.createDataChannel, undefined);
+  } catch (e) {
+    if (e && e.name && e.message)
+      assert_unreached("RTCPeerConnection exception (" + e.name + ": " + e.message + ")");
+    else if (e && e.message)
+      assert_unreached("RTCPeerConnection exception (" + e.message + ")");
+    else
+      assert_unreached("RTCPeerConnection exception");
+  }
+
+  // Test deduced from https://crosswalk-project.org/jira/browse/XWALK-1473
+  try {
+    var dc = pc.createDataChannel("data channel a");
+
+    assert_not_equals(dc, null);
+    assert_equals(dc.label, "data channel a");
+  } catch (e) {
+    if (e && e.name && e.message)
+      assert_unreached("createDataChannel exception (" + e.name + ": " + e.message + ")");
+    else if (e && e.message)
+      assert_unreached("createDataChannel e (" + e.message + ")");
+    else
+      assert_unreached("createDataChannel e");
+  }
+});
+</script>
