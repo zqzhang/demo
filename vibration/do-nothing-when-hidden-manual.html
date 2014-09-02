@@ -13,9 +13,9 @@
 </p>
 <button id='vib'>Start!</button>
 <div id='log'></div>
-<script src='testharness.js'></script>
-<script src='testharnessreport.js'></script>
-<script src='vendor-prefix.js' data-prefixed-objects='[{"ancestors":["navigator"], "name":"vibrate"}]'></script>
+<script src='../support/testharness.js'></script>
+<script src='../support/testharnessreport.js'></script>
+<script src='../support/vendor-prefix.js' data-prefixed-objects='[{"ancestors":["navigator"], "name":"vibrate"}]'></script>
 <script>
   setup({explicit_done:true});
   var t = async_test('Tests that vibrate returns false and does nothing when hidden');
