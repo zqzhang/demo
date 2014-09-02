@@ -1,15 +1,15 @@
 <!doctype html>
 <meta charset="utf-8">
 <title>HTMLMediaElement: play() with extra paramenter</title>
-<script src="support/testharness.js"></script>
-<script src="support/testharnessreport.js"></script>
-<script src="support/media.js"></script>
+<script src="../support/testharness.js"></script>
+<script src="../support/testharnessreport.js"></script>
+<script src="../support/media.js"></script>
 <div id="log"></div>
 <script>
 async_test(function (t) {
   var v = document.createElement("video");
   document.body.appendChild(v);
-  v.src = getVideoURI("support/movie_5");
+  v.src = getVideoURI("../support/movie_5");
   try {
     v.play("one-more-param");
   } catch (e) {
