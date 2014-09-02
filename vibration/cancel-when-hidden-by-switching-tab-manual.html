@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <meta charset='utf-8'>
-<title>Vibration API: cancel ongoing vibrate() with [0]</title>
+<title>Vibration API: cancel ongoing vibrate() when hidden by minimizing</title>
 <link rel='author' title='Intel' href='http://www.intel.com'>
 <link rel='help' href='http://dev.w3.org/2009/dap/vibration/#vibration-interface'>
 <meta name='flags' content='interact'>
-<meta name='assert' content='If pattern contains a single entry with a value of 0, cancel the pre-existing instance of the processing vibration patterns algorithm'>
+<meta name='assert' content='If the visibilitychange event is dispatched at the Document in a browsing context, cancel the pre-existing instance of the processing vibration patterns algorithm'>
 <style>
   button {
     height: 100px;
@@ -21,11 +21,16 @@
 <button id='vib'>Vibrate!</button>
 <script src='../support/vendor-prefix.js' data-prefixed-objects='[{"ancestors":["navigator"], "name":"vibrate"}]'></script>
 <script>
+  var win;
+
   if (undefined !== navigator.vibrate) {
     document.getElementById('vib').onclick = function () {
       navigator.vibrate(5000);
       setTimeout(function () {
-        navigator.vibrate([0]);
+        win = window.open('about:blank', '_blank');
+        setTimeout(function() {
+          win.close();
+        }, 100);
       }, 1000);
     };
   }
