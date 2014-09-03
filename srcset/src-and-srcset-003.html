@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<!--
+This demo is created by 一丝 <yiorsi@gmail.com>
+for the discussion of interaction between src and srcset on the mailing list[1];
+it is orignially created on [2].
+
+Note: to run this demo, please enable
+chrome://flags/#enable-experimental-web-platform-features
+
+[1] http://lists.w3.org/Archives/Public/public-html-ig-zh/2013Oct/0042.html
+[2] http://jsbin.com/ELozanUd/6/edit
+-->
+
+<meta charset="UTF-8">
+<title>JS interaction between src and srcset</title>
+<link rel="stylesheet" href="http://g.tbcdn.cn/thx/cube/1.0.5/neat.css">
+<script>
+  function change() {
+    var img = document.querySelector('#src-img');
+    img.src = "http://www.w3.org/html/logo/badge/html5-badge-h-css3.png";
+    // If not set srcset, browser won't change the image.
+    // img.srcset = "";
+  }
+
+  function changeSrcset() {
+    var img = document.querySelector('#srcset-img');
+    img.srcset = "http://www.w3.org/html/logo/badge/html5-badge-h-css3.png 1x";
+  }
+
+  function reset() {
+    var img = document.querySelector('#src-img');
+    img.src = "http://www.w3.org/html/logo/downloads/HTML5_Logo_256.png";
+  }
+</script>
+<style>
+  h1,h2{
+    font-weight: normal;
+  }
+
+  .box img{
+    display: block;
+    border:1px solid #CCC;
+    padding: 10px;
+  }
+
+  .box input{
+    padding:6px 12px;
+    margin: 30px auto 10px;
+  }
+
+  .demo{
+    display: inline-block;
+  }
+
+  .box{
+    width: 800px;
+    margin: 10px auto;
+    font-size:14px;
+  }
+</style>
+
+<div class="box">
+  <h1>JS interaction between src and srcset</h1>
+  <p>This needs to enable Chrome's flag, chrome://flags/#enable-experimental-web-platform-features</p>
+
+  <!-- Demo begin -->
+
+  <div class="demo">
+    <input type="button" value="Change src" onclick="change()"/>
+    <input type="button" value="Reset" onclick="reset()"/>
+    <img id="src-img" src="http://www.w3.org/html/logo/downloads/HTML5_Logo_256.png" alt="Testing adaptive images" />
+  </div>
+
+  <div class="demo">
+    <input type="button" value="Change srcset" onclick="changeSrcset()"/>
+    <img id="srcset-img" src="http://www.w3.org/html/logo/downloads/HTML5_Logo_256.png"
+    srcset="http://www.w3.org/html/logo/downloads/HTML5_Badge_512.png 2x"
+    alt="Testing adaptive images" />
+  </div>
+
+</div>
+

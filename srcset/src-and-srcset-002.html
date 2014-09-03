@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<!--
+This demo is created by 一丝 <yiorsi@gmail.com>
+for the discussion of interaction between src and srcset on the mailing list[1];
+it is orignially created on [2].
+
+Note: to run this demo, please go to Chrome about:flag and enable
+      #enable-experimental-web-platform-features
+
+[1] http://lists.w3.org/Archives/Public/public-html-ig-zh/2013Oct/0042.html
+[2] http://jsbin.com/OVUQoXO/4/edit
+-->
+
+<meta charset="UTF-8">
+<title>JS interaction between src and srcset</title>
+<link rel="stylesheet" href="http://g.tbcdn.cn/thx/cube/1.0.5/neat.css">
+<script>
+function change() {
+  var img = document.querySelector('img');
+  img.src = "http://www.w3.org/html/logo/badge/html5-badge-h-css3.png";
+  // If not set srcset, browser won't change the image.
+  // img.srcset = "";
+}
+
+function changeSrcset() {
+  var img = document.querySelector('img');
+  img.srcset = "http://www.w3.org/html/logo/badge/html5-badge-h-css3.png 1x";
+}
+</script>
+<style>
+h1,h2{
+  font-weight: normal;
+}
+
+.box img{
+  display: block;
+  padding-bottom: 50%;
+  position: relative;
+  content:"";
+  border:1px solid #CCC;
+  background: url(http://www.w3.org/html/logo/downloads/HTML5_Logo_256.png) 50% 50% no-repeat;
+}
+
+.box input{
+  padding:6px 12px;
+  margin: 10px auto 5em;
+}
+
+.box img:after,
+.box img:before{
+  position: absolute;
+  z-index:1;
+  width: 100%;
+  color: green;
+}
+
+.box img:after{
+  content:"srcset = "attr(srcset)"";
+  top:-3em;
+}
+
+.box img:before{
+  content:"src = "attr(src)"";
+  top:-5em;
+}
+
+.box{
+  width: 600px;
+  margin: 10px auto;
+  font-size:14px;
+}
+</style>
+
+<div class="box">
+  <h1>JS interaction between src and srcset</h1>
+  <p>This needs to enable Chrome's flag, chrome://flags/#enable-experimental-web-platform-features</p>
+  <input type="button" value="Change src" onclick="change()"/>
+  <input type="button" value="Change srcset" onclick="changeSrcset()"/>
+  <img src="http://www.w3.org/html/logo/downloads/HTML5_Logo_256.png"
+       srcset="http://www.w3.org/html/logo/downloads/HTML5_Badge_512.png 2x"
+       alt="Testing adaptive images" />
+</div>
+

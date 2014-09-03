@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<!--
+image-new-src.png: created by @zqzhang
+-->
+
+<meta charset="UTF-8">
+<title>JS interaction between src and srcset</title>
+
+<style>
+  .demo {
+    display: block;
+    padding: 10px;
+  }
+
+  img {
+    height: 400px;
+    width: 400px;
+  }
+</style>
+
+<h1>JS interaction between src and srcset</h1>
+<p>Enable Chrome's flag, chrome://flags/#enable-experimental-web-platform-features</p>
+
+<div class="demo">
+  <pre>&lt;img src="image-src.png" srcset="image-1x.png 1x, image-2x.png 2x"&gt;</pre>
+  <img src="../support/image-src.png" srcset="../support/image-1x.png 1x, ../support/image-2x.png 2x" alt="Image unavailable">
+</div>
+
+<div class="demo">
+  <pre>&lt;img src="image-src.png" srcset="image-2x.png 2x"&gt;</pre>
+  <img src="../support/image-src.png" srcset="../support/image-2x.png 2x" alt="Image unavailable">
+</div>
+
+<div class="demo">
+  <pre>&lt;img src="image-src.png" srcset="image-1x.png 1x, image-2x.png 2x"&gt;</pre>
+  <pre>.src="image-src-new.png"</pre>
+  <img id="change-src" src="../support/image-src.png" srcset="../support/image-1x.png 1x, ../support/image-2x.png 2x" alt="Image unavailable">
+</div>
+
+<div class="demo">
+  <pre>&lt;img src="image-src.png" srcset="image-1x.png 1x, image-2x.png 2x"&gt;</pre>
+  <pre>.srcset="image-1x-srcset.png 1x, image-2x-srcset.png 2x"</pre>
+  <img id="change-srcset" src="../support/image-src.png" srcset="../support/image-1x.png 1x, ../support/image-2x.png 2x" alt="Image unavailable">
+</div>
+
+<div class="demo">
+  <pre>&lt;img src="image-src.png" srcset="image-1x.png 1x, image-2x.png 2x"&gt;</pre>
+  <pre>.src="image-src-new.png"</pre>
+  <pre>.srcset="image-1x-srcset.png 1x, image-2x-srcset.png 2x"</pre>
+  <img id="change-src-srcset" src="../support/image-src.png" srcset="../support/image-1x.png 1x, ../support/image-2x.png 2x" alt="Image unavailable">
+</div>
+
+<script>
+  document.querySelector('#change-src').src = "../support/image-src-new.png";
+
+  document.querySelector('#change-srcset').srcset = "../support/image-1x-new.png 1x, ../support/image-2x-new.png 2x";
+
+  document.querySelector('#change-src-srcset').src = "../support/image-src-new.png";
+  document.querySelector('#change-src-srcset').srcset = "../support/image-1x-new.png 1x, ../support/image-2x-new.png 2x";
+</script>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<!--
+This demo is created by Kang-Hao (Kenny) Lu <kanghaol@oupeng.com>
+for the discussion of interaction between src and srcset on the mailing list[1];
+it is orignially created on [2].
+
+Note: to run this demo, please go to Chrome about:flag and enable
+      #enable-experimental-web-platform-features
+
+[1] http://lists.w3.org/Archives/Public/public-html-ig-zh/2013Oct/0037.html
+[2] http://jsbin.com/OVUQoXO/3/edit
+-->
+
+<script>
+function change() {
+  var img = document.querySelector('img');
+  img.src = "http://www.w3.org/html/logo/badge/html5-badge-h-css3.png";
+  // If not set srcset, browser won't change the image.
+  // img.srcset = "";
+}
+</script>
+
+<img src="http://www.w3.org/html/logo/downloads/HTML5_Logo_256.png"
+     srcset="http://www.w3.org/html/logo/downloads/HTML5_Badge_512.png" />
+<br />
+<input type="button" value="change" onclick="change()"/>
+
