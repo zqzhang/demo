@@ -15,8 +15,8 @@ https://github.com/crosswalk-project/blink-crosswalk/blob/master/LayoutTests/fas
 <script>
 
 async_test(function(t) {
-  var RTCPeerConnection = window.webkitRTCPeerConnection || window.mozRTCPeerConnection;
-  var RTCIceCandidate =  window.RTCIceCandidate || window.mozRTCIceCandidate;
+  // var RTCPeerConnection = RTCPeerConnection || window.mozRTCPeerConnection;
+  // var RTCIceCandidate =  RTCIceCandidate || window.mozRTCIceCandidate;
 
   var pc = null;
   var iceCandidate = null;
@@ -35,7 +35,7 @@ async_test(function(t) {
 
   var onIceChange1 = t.step_func(function() {
     if (pc.iceConnectionState === "completed") {
-      assert_not_equals(RTCIceCandidate, undefined, "RTCIceCandidate is unsupported");
+      // assert_not_equals(RTCIceCandidate, undefined, "RTCIceCandidate is unsupported");
       iceCandidate = new RTCIceCandidate({candidate:"nano nano"});
 
       test(function () {
@@ -67,7 +67,7 @@ async_test(function(t) {
   });
 
   t.step(function () {
-    assert_not_equals(RTCPeerConnection, undefined, "RTCPeerConnection is unsupported");
+    // assert_not_equals(RTCPeerConnection, undefined, "RTCPeerConnection is unsupported");
     pc = new RTCPeerConnection({"iceServers": [{"url": "stun:stun.example.org"}]});
     pc.oniceconnectionstatechange = onIceChange1;
   });
