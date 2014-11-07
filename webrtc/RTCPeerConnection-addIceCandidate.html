@@ -15,7 +15,7 @@ https://github.com/crosswalk-project/blink-crosswalk/blob/master/LayoutTests/fas
 <script>
 
 async_test(function(t) {
-  var RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection || window.mozRTCPeerConnection;
+  var RTCPeerConnection = window.webkitRTCPeerConnection || window.mozRTCPeerConnection;
   var RTCIceCandidate =  window.RTCIceCandidate || window.mozRTCIceCandidate;
 
   var pc = null;
@@ -35,6 +35,7 @@ async_test(function(t) {
 
   var onIceChange1 = t.step_func(function() {
     if (pc.iceConnectionState === "completed") {
+      assert_not_equals(RTCIceCandidate, undefined, "RTCIceCandidate is unsupported");
       iceCandidate = new RTCIceCandidate({candidate:"nano nano"});
 
       test(function () {
@@ -46,21 +47,28 @@ async_test(function(t) {
       test(function () {
         assert_throws("SyntaxError", function () {
           pc.addIceCandidate(iceCandidate, null, null);
-        }, "addIceCandidate threw exception");
+        });
       }, "RTCPeerConnection.addIceCandidate(RTCIceCandidate, null, null) should throw SyntaxError");
 
       test(function () {
         assert_throws("SyntaxError", function () {
           pc.addIceCandidate(iceCandidate, addIceCandidateSuccess, null);
-        }, "addIceCandidate threw exception");
+        });
       }, "RTCPeerConnection.addIceCandidate(RTCIceCandidate, VoidFunction, null) should throw SyntaxError");
+
+      test(function () {
+        assert_throws("SyntaxError", function () {
+          pc.addIceCandidate("", addIceCandidateSuccess, RTCPeerConnectionErrorCallback);
+        });
+      }, "RTCPeerConnection.addIceCandidate(String, VoidFunction, RTCPeerConnectionErrorCallback) should throw SyntaxError");
 
       pc.addIceCandidate(iceCandidate, addIceCandidateSuccess, addIceCandidateFailure);
     }
   });
 
   t.step(function () {
-    pc = new RTCPeerConnection(null, null);
+    assert_not_equals(RTCPeerConnection, undefined, "RTCPeerConnection is unsupported");
+    pc = new RTCPeerConnection({"iceServers": [{"url": "stun:stun.example.org"}]});
     pc.oniceconnectionstatechange = onIceChange1;
   });
 
