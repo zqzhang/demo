@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<!--
+Test converted from blink:
+https://github.com/crosswalk-project/blink-crosswalk/blob/master/LayoutTests/fast/mediastream/RTCPeerConnection-ice.html
+-->
+
+<meta charset="utf-8">
+<title>WebRTC Test: RTCPeerConnection.addIceCandidate()</title>
+<link rel="help" href="http://w3c.github.io/webrtc-pc/#widl-RTCPeerConnection-addIceCandidate-void-RTCIceCandidate-candidate-VoidFunction-successCallback-RTCPeerConnectionErrorCallback-failureCallback">
+<meta name="assert" content="If the candidate parameter is malformed, throw a SyntaxError exception and abort these steps.">
+<script src="../support/testharness.js"></script>
+<script src="../support/testharnessreport.js"></script>
+
+<div id=log></div>
+<script>
+
+async_test(function(t) {
+  var RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection || window.mozRTCPeerConnection;
+  var RTCIceCandidate =  window.RTCIceCandidate || window.mozRTCIceCandidate;
+
+  var pc = null;
+  var iceCandidate = null;
+
+  var onIceChange2 = t.step_func(function() {
+    assert_equals(pc.iceConnectionState, "closed");
+    t.done();
+  });
+
+  var addIceCandidateSuccess = t.step_func(function() {
+    pc.oniceconnectionstatechange = onIceChange2;
+    pc.close();
+  });
+
+  var addIceCandidateFailure = t.unreached_func("addIceCandidateFailue was called");
+
+  var onIceChange1 = t.step_func(function() {
+    if (pc.iceConnectionState === "completed") {
+      iceCandidate = new RTCIceCandidate({candidate:"nano nano"});
+
+      test(function () {
+        assert_throws("SyntaxError", function () {
+          pc.addIceCandidate(null, null, null);
+        }, "addIceCandidate threw exception");
+      }, "RTCPeerConnection.addIceCandidate(null, null, null) should throw SyntaxError");
+
+      test(function () {
+        assert_throws("SyntaxError", function () {
+          pc.addIceCandidate(iceCandidate, null, null);
+        }, "addIceCandidate threw exception");
+      }, "RTCPeerConnection.addIceCandidate(RTCIceCandidate, null, null) should throw SyntaxError");
+
+      test(function () {
+        assert_throws("SyntaxError", function () {
+          pc.addIceCandidate(iceCandidate, addIceCandidateSuccess, null);
+        }, "addIceCandidate threw exception");
+      }, "RTCPeerConnection.addIceCandidate(RTCIceCandidate, VoidFunction, null) should throw SyntaxError");
+
+      pc.addIceCandidate(iceCandidate, addIceCandidateSuccess, addIceCandidateFailure);
+    }
+  });
+
+  t.step(function () {
+    pc = new RTCPeerConnection(null, null);
+    pc.oniceconnectionstatechange = onIceChange1;
+  });
+
+}, "RTCPeerConnection.addIceCandidate(RTCIceCandidate, VoidFunction, RTCPeerConnectionErrorCallback) should not throw");
+</script>
+
