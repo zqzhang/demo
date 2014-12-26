@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<meta charset='utf-8'>
+<title>HTML Media Capture Test: user denial of captured image leading to no capture</title>
+<link rel='author' title='Intel' href='http://www.intel.com'>
+<link rel='help' href='http://www.w3.org/TR/html-media-capture/#security'>
+<link rel='help' href='http://www.w3.org/TR/html5/forms.html#attr-input-accept'>
+
+<p>Clear all camera permissions before running this test. If prompted for permission, please allow.</p>
+
+<p>Cancel capturing an image.</p>
+
+<p>Test passes</p>
+<ol>
+  <li>if there is <strong>no</strong> image file captured.</li>
+</ol>
+
+<input type='file' accept='image/*' capture>
+
