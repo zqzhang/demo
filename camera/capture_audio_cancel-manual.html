@@ -1,54 +1,43 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset='utf-8'>
-    <title>HTML Media Capture Test: user denial of captured audio leading to no capture</title>
-    <link rel='author' title='Intel' href='http://www.intel.com'>
-    <link rel='help' href='http://www.w3.org/TR/html-media-capture/#security'>
-    <link rel='help' href='http://www.w3.org/TR/html5/forms.html#file-upload-state-(type=file)'>
-    <meta name='flags' content='interact'>
-    <script src='../support/testharness.js'></script>
-    <script src='../support/testharnessreport.js'></script>
-  </head>
-  <body>
-    <p>This test validates that the user agent must not save the captured audio to any data storage if the user cancel the capture.</p>
+<meta charset='utf-8'>
+<title>HTML Media Capture Test: user denial of captured audio leading to no capture</title>
+<link rel='author' title='Intel' href='http://www.intel.com'>
+<link rel='help' href='http://www.w3.org/TR/html-media-capture/#security'>
+<link rel='help' href='http://www.w3.org/TR/html5/forms.html#attr-input-accept'>
+<meta name='flags' content='interact'>
+<meta name="timeout" content="long">
+<script src='../support/testharness.js'></script>
+<script src='../support/testharnessreport.js'></script>
 
-    <p>Test steps:</p>
-    <ol>
-      <li>Click the button. If prompted for permission, please allow.</li>
-      <li>Capture an audio, then cancel captured audio. (Make sure do it in 10 seconds).</li>
-    </ol>
+<p>Clear all microphone permissions before running this test. If prompted for permission, please allow.</p>
 
-    <form>
-      <input type="file" accept="audio/*" capture>
-    </form>
+<p>After hitting the button below, capture an audio and then cancel the capturing. Please do these actions in 30 seconds.</p>
 
-    <div id='log'></div>
+<form>
+  <input type='file' accept='audio/*' capture>
+</form>
 
-    <script>
-      var timeout;
-      setup({explicit_done: true, explicit_timeout: true});
+<div id='log'></div>
 
-      var input = document.querySelector('input[type=file]');
+<script>
+  var input;
 
-      input.onchange = function() {
-        clearTimeout(timeout);
-        test(function() {
-          assert_equals(input.files.length, 0, 'no data is captured');
-        }, document.title);
+  setup(function() {
+    input = document.querySelector('input[type=file]');
+  }, {explicit_done: true});
 
+  async_test(function(t) {
+    input.onchange = t.unreached_func("Should not confirm the capturing");
+
+    input.onclick = t.step_func(function() {
+
+      // Here has a bug: after clicking the button but no more actions, it still get PASS after 30s.
+      setTimeout(function() {
+        assert_equals(input.files.length, 0, 'Denial of captured audio leads to no capture');
+        t.done();
         done();
-      }
+      }, 30000);
+    });
+  });
+</script>
 
-      input.onclick = function() {
-        timeout = setTimeout(function () {
-            test(function() {
-              assert_equals(input.files.length, 0, 'no data is captured');
-            }, document.title);
-
-            done();
-        }, 10000);
-      }
-    </script>
-  </body>
-</html>

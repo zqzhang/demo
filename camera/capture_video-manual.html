@@ -1,43 +1,37 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset='utf-8'>
-    <title>HTML Media Capture Test: capture video to produce one video file</title>
-    <link rel='author' title='Intel' href='http://www.intel.com'>
-    <link rel='help' href='http://www.w3.org/TR/html-media-capture/#security'>
-    <link rel='help' href='http://www.w3.org/TR/html5/forms.html#file-upload-state-(type=file)'>
-    <meta name='flags' content='interact'>
-    <script src='../support/testharness.js'></script>
-    <script src='../support/testharnessreport.js'></script>
-  </head>
-  <body>
-    <p>This test validates that the user agent need seek user consent before initiating capture of content by camera, and correctly produces video file when the user goes ahead with a capture.</p>
+<meta charset='utf-8'>
+<title>HTML Media Capture Test: capture video to produce one video file</title>
+<link rel='author' title='Intel' href='http://www.intel.com'>
+<link rel='help' href='http://www.w3.org/TR/html-media-capture/#security'>
+<link rel='help' href='http://www.w3.org/TR/html5/forms.html#attr-input-accept'>
+<meta name='flags' content='interact'>
+<meta name="timeout" content="long">
+<script src='../support/testharness.js'></script>
+<script src='../support/testharnessreport.js'></script>
 
-    <p>Test steps:</p>
-    <ol>
-      <li>Click the button. If prompted for permission, please allow.</li>
-      <li>Capture a video.</li>
-    </ol>
+<p>Clear all camera/microphone permissions before running this test. If prompted for permission, please allow.</p>
 
-    <form>
-      <input type="file" accept="video/*" capture>
-    </form>
+<p>After hitting the button below, capture an video and then confirm the capturing.</p>
 
-    <div id='log'></div>
+<form>
+  <input type='file' accept='video/*' capture>
+<form>
 
-    <script>
-      setup({explicit_done: true, explicit_timeout: true});
+<div id='log'></div>
 
-      var input = document.querySelector('input[type=file]');
-      input.onchange = function() {
-        test(function() {
-          var files = input.files;
-          assert_equals(files.length, 1, 'Capture one video file');
-          assert_regexp_match(files[0].type, /^video\//, 'The capture video type is video/*');
-        }, document.title);
+<script>
+  var input;
 
-        done();
-      }
-    </script>
-  </body>
-</html>
+  setup(function() {
+    input = document.querySelector('input[type=file]');
+  }, {explicit_done: true});
+
+  async_test(function(t) {
+    input.onchange = t.step_func_done(function() {
+      assert_equals(input.files.length, 1, 'Should capture one file');
+      assert_regexp_match(input.files[0].type, /^video\//, 'The captured file should be type of video');
+      done();
+    });
+  });
+</script>
+
