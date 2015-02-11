@@ -74,7 +74,7 @@
     });
   };
 
-  var batteryFailure = function (e) {
+  var batteryFailure = function (error) {
     onchargingchange_test.step(function () {
       assert_unreached(error.message);
     });
