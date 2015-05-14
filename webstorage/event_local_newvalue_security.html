@@ -1,0 +1,29 @@
+<!DOCTYPE HTML>
+<!--
+  Tests from
+  https://github.com/w3c/web-platform-tests/compare/master...siusin:localstorage_throws_securityerror
+-->
+<html>
+ <head>
+  <title>Web Storage</title>
+  <script src="../support/testharness.js"></script>
+  <script src="../support/testharnessreport.js"></script>
+  </head>
+ <body>
+    <h1>event_local_newValue</h1>
+    <div id="log"></div>
+    <script>
+    test(function() {
+            localStorage.clear();
+            localStorage.setItem("parent", "this");
+
+            assert_throws("SecurityError", function() {
+              var el = document.createElement("iframe");
+              el.setAttribute('id', 'ifrm');
+              el.setAttribute('src', 'iframe/local_change_item_iframe_security.html');
+              document.body.appendChild(el);
+            });
+        }, "should throw SecurityError when document.domain changed");
+    </script>
+ </body>
+</html>

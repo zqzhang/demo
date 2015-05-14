@@ -1,0 +1,42 @@
+<!DOCTYPE HTML>
+<!--
+  Tests from
+  https://github.com/siusin/web-platform-tests/blob/add_key_order_test/webstorage/keys_added_in_order.html
+-->
+<meta charset="utf-8">
+<title>Key</title>
+<script src="../support/testharness.js"></script>
+<script src="../support/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+["localStorage", "sessionStorage"].forEach(function(name) {
+    var get_property_names = function(s) {
+        var property_names = [];
+        for (var property_name in s) {
+            property_names.push(property_name);
+        }
+        return property_names;
+    };
+    var storage = window[name];
+    var p_names;
+    storage.clear();
+
+    test(function() {
+        storage.setItem("name", "user1");
+        p_names = get_property_names(storage);
+        assert_array_equals(["name"], [p_names[0]]);
+
+        storage.setItem("age", "20");
+        p_names = get_property_names(storage);
+        assert_array_equals(["name", "age"], [p_names[0], p_names[1]]);
+
+        storage.setItem("a", "1");
+        p_names = get_property_names(storage);
+        assert_array_equals(["name", "age", "a"],  [p_names[0], p_names[1], p_names[2]]);
+        
+        storage.setItem("b", "2");
+        p_names = get_property_names(storage);
+        assert_array_equals(["name", "age", "a", "b"], [p_names[0], p_names[1], p_names[2], p_names[3]]);
+    });
+});
+</script>

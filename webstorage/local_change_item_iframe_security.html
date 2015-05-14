@@ -1,0 +1,23 @@
+<!DOCTYPE HTML>
+<!--
+  Tests from
+  https://github.com/w3c/web-platform-tests/compare/master...siusin:localstorage_throws_securityerror
+-->
+<html>
+  <body>
+    <script>
+        if (('localStorage' in window) && window.localStorage !== null){
+            try {
+                localStorage.setItem("name", "user1");
+                document.domain = document.domain.substring(document.domain.indexOf('.') + 1);
+                localStorage.setItem("name", "user2");
+            } catch (e) {
+                parent.throw(e);
+            }
+            localStorage.clear();
+        } else {
+            parent.fail("localStorage is not supported.");
+        }
+    </script>
+  </body>
+</html>
