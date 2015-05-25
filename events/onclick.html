@@ -1,0 +1,23 @@
+<!doctype html>
+<!--
+  Example from
+  https://html.spec.whatwg.org/multipage/webappapis.html#eventhandler
+-->
+<meta charset="utf-8">
+<title>Event listener invoking order</title>
+<pre>
+Since listeners are called in the order they were registered,
+the order of event listeners for a particular event type will always
+be first the event listeners registered with addEventListener()
+before the first time the event handler was set to a non-null value,
+then the callback to which it is currently set, if any, and finally
+the event listeners registered with addEventListener() after the
+first time the event handler was set to a non-null value.
+</pre>
+<button id="test">Start Demo</button>
+<script>
+  var button = document.getElementById('test');
+  button.addEventListener('click', function () { alert('ONE') }, false);
+  button.onclick = function () { alert('THREE'); };
+  button.addEventListener('click', function () { alert('TWO') }, false);
+</script>
