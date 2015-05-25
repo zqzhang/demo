@@ -1,0 +1,13 @@
+<!doctype html>
+<!--
+  Example from
+  https://html.spec.whatwg.org/multipage/webappapis.html#eventhandler
+-->
+<meta charset="utf-8">
+<title>onload and onclick</title>
+<pre>
+This fragment leads to an alert saying "[object Window]" when the document
+is loaded, and an alert saying "[object HTMLBodyElement]" whenever the user
+clicks something in the page.
+</pre>
+<body onload="alert(this)" onclick="alert(this)">
