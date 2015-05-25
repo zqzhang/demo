@@ -8,6 +8,7 @@
 <script>
   var button = document.getElementById('test');
   button.addEventListener('click', function () { alert('ONE') }, false);
+  button.onclick = function () { alert('XXX'); };
   button.setAttribute('onclick', "alert('NOT CALLED')"); // event handler listener is registered here
   button.addEventListener('click', function () { alert('THREE') }, false);
   button.onclick = function () { alert('TWO'); };
