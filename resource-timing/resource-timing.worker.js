@@ -16,6 +16,8 @@ promise_test(function(test) {
         performance.clearResourceTimings();
       });
       performance.setResourceTimingBufferSize(expectedResources.length);
+
+      resolve();
     })
     .then(function() {
       performance.clearResourceTimings();

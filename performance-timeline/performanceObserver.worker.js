@@ -7,7 +7,7 @@ promise_test(function(test) {
     cleanup();
 
     var observer = new PerformanceObserver(function(list) {
-
+      resolve(list);
       test.add_cleanup(function() {
         observer.disconnect();
       });
@@ -18,6 +18,7 @@ promise_test(function(test) {
     doWork();
     performance.mark("markEnd");
     performance.measure("measure", "markStart", "markEnd");
+    
   }).then(function(list) {
 
     var entries = list.getEntries();
@@ -32,7 +33,7 @@ promise_test(function(test) {
     cleanup();
 
     var observer = new PerformanceObserver(function(list) {
-
+      resolve(list);
       test.add_cleanup(function() {
         observer.disconnect();
       });
