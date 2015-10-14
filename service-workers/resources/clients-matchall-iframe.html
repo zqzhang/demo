@@ -27,43 +27,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 
 <meta charset="utf-8">
-<title>ServiceWorkerRegistration.update()</title>
+<title>Clients matchAll Reference File</title>
 <link rel="author" title="Intel" href="http://www.intel.com">
 <link rel="author" title="Chunyan Wang" href="mailto:chunyanx.wang@intel.com">
-<link rel="help" href="http://w3c.github.io/resource-timing/#performanceresourcetiming">
-<script src="../support/testharness.js"></script>
-<script src="../support/testharnessreport.js"></script>
-<script src="resources/test-helper.js"></script>
-<div id="log"></div>
-<script>
-
-async_test(function(t) {
-  var scope = "resources/update.html"
-  var scriptURL = "resources/update-worker.js";
-  var registration;
-  var iframe;
-
-  //service_worker_unregister_and_register(t, scriptURL, scope)
-  navigator.serviceWorker.register(scriptURL, {scope: scope})
-    .then(function(r) {
-      registration = r;
-
-      return with_iframe(scope);
-    })
-    .then(function(frame) {
-      iframe = frame;
-
-      return registration.update();
-    })
-    .then(function() {
-      iframe.remove();
-      return registration.unregister();
-    })
-    .then(function() {
-      t.done();
-    })
-    .catch(unreached_rejection(t));
-}, "Check that ServiceWorkerRegistration.update() returns a promise.");
-
-</script>
 

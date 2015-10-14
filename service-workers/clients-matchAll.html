@@ -27,43 +27,58 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 
 <meta charset="utf-8">
-<title>ServiceWorkerRegistration.update()</title>
+<title>PerformanceResourceTiming.workerStart</title>
 <link rel="author" title="Intel" href="http://www.intel.com">
 <link rel="author" title="Chunyan Wang" href="mailto:chunyanx.wang@intel.com">
-<link rel="help" href="http://w3c.github.io/resource-timing/#performanceresourcetiming">
+<link rel="help" href="https://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html#clients">
 <script src="../support/testharness.js"></script>
 <script src="../support/testharnessreport.js"></script>
 <script src="resources/test-helper.js"></script>
 <div id="log"></div>
 <script>
 
-async_test(function(t) {
-  var scope = "resources/update.html"
-  var scriptURL = "resources/update-worker.js";
-  var registration;
-  var iframe;
+var registration;
 
-  //service_worker_unregister_and_register(t, scriptURL, scope)
+async_test(function(t) {
+  var scope = "resources/clients-matchall-iframe.html"
+  var scriptURL = "resources/clients-matchall-worker.js";
+  var frame1,
+      frame2;
+
   navigator.serviceWorker.register(scriptURL, {scope: scope})
     .then(function(r) {
       registration = r;
-
-      return with_iframe(scope);
+      return wait_for_state(t, registration.installing, "activated");
+    })
+    .then(function () {
+      return with_iframe(scope + "#1");
     })
     .then(function(frame) {
-      iframe = frame;
-
-      return registration.update();
+      frame1 = frame;
+      return with_iframe(scope + "#2");
     })
-    .then(function() {
-      iframe.remove();
-      return registration.unregister();
+    .then(function(frame) {
+      frame2 = frame;
+      var channel = new MessageChannel();
+      channel.port1.onmessage = t.step_func(function(evt) {
+        assert_equals(evt.data.length, 2);
+        assert_equals(evt.data[0], new URL(scope + "#1", location).toString());
+        assert_equals(evt.data[1], new URL(scope + "#2", location).toString());
+
+        frame1.remove();
+        frame2.remove();
+        return registration.unregister();
+      });
+      
+      frame.contentWindow.navigator.serviceWorker.controller.postMessage(
+        {port: channel.port2}, [channel.port2]);
     })
     .then(function() {
       t.done();
     })
     .catch(unreached_rejection(t));
-}, "Check that ServiceWorkerRegistration.update() returns a promise.");
+    
+}, "Check that Clients.matchAll() returns clients in MRU order.");
 
 </script>
 
