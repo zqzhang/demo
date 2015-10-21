@@ -27,6 +27,43 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 
 <meta charset="utf-8">
-<title>ServiceWorkerRegistration.update() Reference File</title>
+<title>ServiceWorkerRegistration.waiting</title>
 <link rel="author" title="Intel" href="http://www.intel.com">
 <link rel="author" title="Chunyan Wang" href="mailto:chunyanx.wang@intel.com">
+<link rel="help" href="https://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html#navigator-service-worker-waiting">
+<script src="../support/testharness.js"></script>
+<script src="../support/testharnessreport.js"></script>
+<script src="resources/test-helper.js"></script>
+<div id="log"></div>
+<script>
+
+async_test(function(t) {
+  var scope = "resources/"
+  var scriptURL = "resources/empty-worker.js";
+  var registration;
+
+  service_worker_unregister_and_register(t, scriptURL, scope)
+    .then(function(r) {
+      registration = r;
+      assert_true(registration instanceof EventTarget);
+      assert_true(registration instanceof ServiceWorkerRegistration);
+      
+      return wait_for_state(t, registration.installing, "installed");
+    })
+    .then(function(state) {
+      var serviceWorker = registration.waiting;
+      var expectedURL = new URL(scriptURL, location).toString();
+      assert_true(serviceWorker instanceof ServiceWorker);
+      assert_equals(serviceWorker.scriptURL, expectedURL);
+      assert_equals(serviceWorker.state, "installed");
+
+      registration.unregister()
+        .then(function() {
+          t.done();
+        });
+    })
+    .catch(unreached_rejection(t));
+}, "Check that ServiceWorkerRegistration.waiting returns a waitingWorker.");
+
+</script>
+

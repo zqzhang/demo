@@ -27,56 +27,50 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 
 <meta charset="utf-8">
-<title>PerformanceResourceTiming.workerStart</title>
+<title>ServiceWorkerRegistration onupdatefound event</title>
 <link rel="author" title="Intel" href="http://www.intel.com">
 <link rel="author" title="Chunyan Wang" href="mailto:chunyanx.wang@intel.com">
-<link rel="help" href="https://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html#clients">
+<link rel="help" href="https://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html#service-worker-registration-event-handler">
 <script src="../support/testharness.js"></script>
 <script src="../support/testharnessreport.js"></script>
 <script src="resources/test-helper.js"></script>
 <div id="log"></div>
 <script>
 
-var registration;
-
 async_test(function(t) {
-  var scope = "resources/blank-iframe.html"
-  var scriptURL = "resources/clients-matchall-worker.js";
-  var frame1,
-      frame2;
-    service_worker_unregister_and_register(t, scriptURL, scope)
+  var scope = "resources/"
+  var scriptURL = "resources/empty-worker.js";
+  var registration;
+  var iframe;
+
+  service_worker_unregister_and_register(t, scriptURL, scope)
     .then(function(r) {
       registration = r;
-    })
-    .then(function () {
-      return with_iframe(scope + "#1");
-    })
-    .then(function(frame) {
-      frame1 = frame;
-      return with_iframe(scope + "#2");
-    })
-    .then(function(frame) {
-      frame2 = frame;
-      var channel = new MessageChannel();
-      channel.port1.onmessage = t.step_func(function(evt) {
-        assert_equals(evt.data.length, 2);
-        assert_equals(evt.data[0], new URL(scope + "#2", location).toString());
-        assert_equals(evt.data[1], new URL(scope + "#1", location).toString());
-
-        frame1.remove();
-        frame2.remove();
-        registration.unregister()
-        .then(function(result) {
-          t.done();
-        });
+      registration.onupdatefound = t.step_func(function(evt) {
+        assert_equals(evt.type, "updatefound", "the type of event");
+        t.done();
       });
-      
-      frame.contentWindow.navigator.serviceWorker.controller.postMessage(
-        {port: channel.port2}, [channel.port2]);
+
     })
     .catch(unreached_rejection(t));
-    
-}, "Check that Clients.matchAll() returns clients in MRU order.");
+}, "Check that the onupdatefound event is fired when the service worker registration's installing worker changes.");
+
+async_test(function(t) {
+  var scope = "resources/"
+  var scriptURL = "resources/empty-worker.js";
+  var registration;
+  var iframe;
+
+  service_worker_unregister_and_register(t, scriptURL, scope)
+    .then(function(r) {
+      registration = r;
+      registration.addEventListener("updatefound", t.step_func(function(evt) {
+        t.done();
+      }));
+
+    })
+    .catch(unreached_rejection(t));
+}, "Check that ServiceWorkerRegistration has implement addEventListener method.");
 
 </script>
 

@@ -27,10 +27,10 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 
 <meta charset="utf-8">
-<title>ServiceWorker.state</title>
+<title>ServiceWorkerContainer.register()</title>
 <link rel="author" title="Intel" href="http://www.intel.com">
 <link rel="author" title="Chunyan Wang" href="mailto:chunyanx.wang@intel.com">
-<link rel="help" href="https://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html#service-worker-state">
+<link rel="help" href="https://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html#navigator-service-worker-register">
 <script src="../support/testharness.js"></script>
 <script src="../support/testharnessreport.js"></script>
 <script src="resources/test-helper.js"></script>
@@ -40,49 +40,65 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 async_test(function(t) {
   var scope = "resources/"
   var scriptURL = "resources/empty-worker.js";
-  var registration;
 
-  assert_true("serviceWorker" in navigator);
-
-  service_worker_unregister_and_register(t, scriptURL, scope)
-    .then(function(r) {
-      registration = r;
-
-      var serviceWorker = registration.installing;
-      assert_equals(serviceWorker.state, "installing");
-
-      var currentState = serviceWorker.state;
-      serviceWorker.onstatechange = t.step_func(function(evt) {
-        switch(currentState) {
-          case "installing":
-            assert_equals(serviceWorker.state, "installed");
-            break;
-          case "installed":
-            assert_equals(serviceWorker.state, "activating");
-            break;
-          case "activating":
-            assert_equals(serviceWorker.state, "activated");
-            break;
-          case "activated":
-            assert_equals(serviceWorker.state, "redundant");
-            break;
-          default:
-            assert_unreached("unreached here");
-            break;
-        }
-        currentState = serviceWorker.state;
-
-        if(serviceWorker.state == "activated") {
+  service_worker_unregister(t, scriptURL, scope)
+    .then(function() {
+      navigator.serviceWorker.register(scriptURL, {scope: scope})
+        .then(function(registration) {
+          var absoulteScope = new URL(scope, location).toString();
+          assert_equals(registration.scope, absoulteScope);
+          
           registration.unregister()
             .then(function() {
               t.done();
-          });
-        }
-
-      });
+            });
+        })
+        .catch(unreached_rejection(t));
     })
     .catch(unreached_rejection(t));
-}, "Check that serviceWorker state attribute and onstatechange event.");
+}, "Check that ServiceWorkerContainer.register with normal scope.");
+
+async_test(function(t) {
+  var scriptURL = "resources/empty-worker.js";
+  var absoulteScript = new URL(scriptURL, location);
+  var scope = new URL("./", absoulteScript).toString();
+
+  service_worker_unregister(t, scriptURL, scope)
+    .then(function() {
+      navigator.serviceWorker.register(scriptURL)
+        .then(function(registration) {
+          assert_equals(registration.scope, scope);
+          
+          registration.unregister()
+            .then(function() {
+              t.done();
+            });
+        })
+        .catch(unreached_rejection(t, "register fails"));
+    })
+    .catch(unreached_rejection(t, "unregister fails"));
+}, "Check that ServiceWorkerContainer.register with default scope.");
+
+async_test(function(t) {
+  var scriptURL = "resources/empty-worker.js";
+  var absoulteScript = new URL(scriptURL, location);
+  var scope = new URL("./", absoulteScript).toString();
+  var registration;
+
+  service_worker_unregister(t, scriptURL, scope)
+    .then(function() {
+      navigator.serviceWorker.register(scriptURL, {scope: "not-exist"})
+        .then(function(r) {
+          assert_unreached("unreached here.")
+          t.done();
+        })
+        .catch(function(error) {
+          assert_equals(error.name, "SecurityError");
+          t.done();
+        });
+    })
+    .catch(unreached_rejection(t));
+}, "Check that ServiceWorkerContainer.register with not exist scope.");
 
 </script>
 

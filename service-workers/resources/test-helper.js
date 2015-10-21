@@ -80,7 +80,7 @@ function with_iframe(url) {
   });
 }
 
-function unreached_rejection(test, error) {
+function unreached_rejection(test, prefix) {
   return test.step_func(function(error) {
     var reason = error.message || error.name || error;
     var error_prefix = prefix || 'unexpected rejection';

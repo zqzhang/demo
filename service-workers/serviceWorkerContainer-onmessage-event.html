@@ -27,7 +27,47 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 
 <meta charset="utf-8">
-<title>Clients matchAll Reference File</title>
+<title>ServiceWorkerContainer onmessage event</title>
 <link rel="author" title="Intel" href="http://www.intel.com">
 <link rel="author" title="Chunyan Wang" href="mailto:chunyanx.wang@intel.com">
+<link rel="help" href="https://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html#service-worker-container-event-handlers">
+<script src="../support/testharness.js"></script>
+<script src="../support/testharnessreport.js"></script>
+<script src="resources/test-helper.js"></script>
+<div id="log"></div>
+<script>
+
+async_test(function(t) {
+  var scope = "resources/blank-iframe.html"
+  var scriptURL = "resources/post-message-to-client-worker.js";
+  var registration;
+
+  service_worker_unregister_and_register(t, scriptURL, scope)
+    .then(function(r) {
+      registration = r;
+
+      return wait_for_state(t, registration.installing, "activated");
+    })
+    .then(function(state) {
+      return with_iframe(scope);
+    })
+    .then(function(frame) {
+      var frame_window = frame.contentWindow;
+      frame_window.navigator.serviceWorker.onmessage = t.step_func(function(evt) {
+        assert_equals(evt.type, "message", "the type of event");
+        assert_equals(evt.data, "PASS");
+
+        registration.unregister()
+          .then(function() {
+            frame.remove();
+            t.done();
+          });
+      });
+      
+       frame_window.navigator.serviceWorker.controller.postMessage('ping');
+    })
+    .catch(unreached_rejection(t));
+}, "Check that the event onmessage is fired when it receives a message.");
+
+</script>
 
