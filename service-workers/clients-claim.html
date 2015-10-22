@@ -27,10 +27,10 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 
 <meta charset="utf-8">
-<title>clients matchAll()</title>
+<title>clients claim()</title>
 <link rel="author" title="Intel" href="http://www.intel.com">
 <link rel="author" title="Chunyan Wang" href="mailto:chunyanx.wang@intel.com">
-<link rel="help" href="https://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html#clients-matchall-method">
+<link rel="help" href="https://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html#clients-claim-method">
 <script src="../support/testharness.js"></script>
 <script src="../support/testharnessreport.js"></script>
 <script src="resources/test-helper.js"></script>
@@ -40,44 +40,62 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 var registration;
 
 async_test(function(t) {
-  var scope = "resources/blank-iframe.html"
-  var scriptURL = "resources/clients-matchall-worker.js";
-  var frame1,
-      frame2;
-    service_worker_unregister_and_register(t, scriptURL, scope)
+  var scope1 = "resources/";
+  var scope2 = "resources/blank-iframe.html";
+  var script1 = "resources/empty-worker.js";
+  var script2 = "resources/clients-claim-worker.js";
+  var iframe;
+  var worker;
+
+    service_worker_unregister_and_register(t, script1, scope1)
     .then(function(r) {
-      registration = r;
+      return wait_for_state(t, r.installing, "activated");
     })
     .then(function () {
-      return with_iframe(scope + "#1");
+      return with_iframe(scope2);
     })
     .then(function(frame) {
-      frame1 = frame;
-      frame.focus();
-      return with_iframe(scope + "#2");
+      iframe = frame;
+      return navigator.serviceWorker.register(script2, {scope: scope2});
     })
-    .then(function(frame) {
-      frame2 = frame;
-      var channel = new MessageChannel();
-      channel.port1.onmessage = t.step_func(function(evt) {
-        assert_equals(evt.data.length, 2);
-        assert_equals(evt.data[0], new URL(scope + "#1", location).toString());
-        assert_equals(evt.data[1], new URL(scope + "#2", location).toString());
+    .then(function(r) {
+      registration = r;
+      worker = registration.installing;
+      return wait_for_state(t, registration.installing, "activated");
+    })
+    .then(function(state) {
+      var saw_controllerchanged = new Promise(function(resolve) {
+        iframe.contentWindow.navigator.serviceWorker.oncontrollerchange =
+          function() { resolve(); }
+      });
 
-        frame1.remove();
-        frame2.remove();
-        registration.unregister()
-        .then(function(result) {
-          t.done();
+      var channel = new MessageChannel();
+      var saw_message = new Promise(function(resolve) {
+        channel.port1.onmessage = t.step_func(function(e) {
+          assert_equals(e.data, "PASS");
+          resolve();
         });
       });
 
-      frame.contentWindow.navigator.serviceWorker.controller.postMessage(
-        {port: channel.port2}, [channel.port2]);
+      worker.postMessage({port: channel.port2}, [channel.port2]);
+      return Promise.all([saw_controllerchanged, saw_message]);
+    })
+    .then(function() {
+      var url = new URL(script2, location).href;
+      assert_equals(
+        frame.contentWindow.navigator.serviceWorker.controller.scriptURL,
+        url,
+        "Frame controller scriptURL should be changed to script2");
+
+        registration.unregister()
+          .then(function(result) {
+            iframe.remove();
+            t.done();
+          });
     })
     .catch(unreached_rejection(t));
     
-}, "Check that Clients.matchAll() returns clients in MRU order.");
+}, "Check that Clients.claims client which is using another registration.");
 
 </script>
 

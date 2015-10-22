@@ -6,6 +6,7 @@ onmessage = function(evt) {
     clients.forEach(function(client) {
       clientsUrls.push(client.url);
     });
+    clientsUrls.sort(function(a, b) { return a[0] > b[0] ? 1 : -1; });
     port.postMessage(clientsUrls);
   });
 }

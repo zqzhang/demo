@@ -27,57 +27,76 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 
 <meta charset="utf-8">
-<title>clients matchAll()</title>
+<title>WindowClient focus() and focused</title>
 <link rel="author" title="Intel" href="http://www.intel.com">
 <link rel="author" title="Chunyan Wang" href="mailto:chunyanx.wang@intel.com">
-<link rel="help" href="https://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html#clients-matchall-method">
+<link rel="help" href="https://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html#client-id-attribute">
 <script src="../support/testharness.js"></script>
 <script src="../support/testharnessreport.js"></script>
 <script src="resources/test-helper.js"></script>
 <div id="log"></div>
 <script>
-
-var registration;
-
 async_test(function(t) {
   var scope = "resources/blank-iframe.html"
-  var scriptURL = "resources/clients-matchall-worker.js";
-  var frame1,
-      frame2;
-    service_worker_unregister_and_register(t, scriptURL, scope)
+  var scriptURL = "resources/client-focus-worker.js";
+  var registration;
+
+  service_worker_unregister_and_register(t, scriptURL, scope)
     .then(function(r) {
       registration = r;
-    })
-    .then(function () {
-      return with_iframe(scope + "#1");
-    })
-    .then(function(frame) {
-      frame1 = frame;
-      frame.focus();
-      return with_iframe(scope + "#2");
-    })
-    .then(function(frame) {
-      frame2 = frame;
-      var channel = new MessageChannel();
-      channel.port1.onmessage = t.step_func(function(evt) {
-        assert_equals(evt.data.length, 2);
-        assert_equals(evt.data[0], new URL(scope + "#1", location).toString());
-        assert_equals(evt.data[1], new URL(scope + "#2", location).toString());
 
-        frame1.remove();
-        frame2.remove();
+      return wait_for_state(t, registration.installing, "activated");
+    })
+    .then(function(state) {
+      return with_iframe(scope);
+    })
+    .then(function(frame) {
+      frame.contentWindow.navigator.serviceWorker.onmessage = t.step_func(function(evt) {
+        assert_equals(evt.data, false);
+
         registration.unregister()
         .then(function(result) {
+          frame.remove();
           t.done();
         });
       });
 
-      frame.contentWindow.navigator.serviceWorker.controller.postMessage(
-        {port: channel.port2}, [channel.port2]);
+      frame.contentWindow.navigator.serviceWorker.controller.postMessage("ping");
     })
     .catch(unreached_rejection(t));
-    
-}, "Check that Clients.matchAll() returns clients in MRU order.");
+}, "Check that focus state is defocused.");
+
+
+async_test(function(t) {
+  var scope = "resources/blank-iframe.html"
+  var scriptURL = "resources/client-focus-worker.js";
+  var registration;
+
+  service_worker_unregister_and_register(t, scriptURL, scope)
+    .then(function(r) {
+      registration = r;
+
+      return wait_for_state(t, registration.installing, "activated");
+    })
+    .then(function(state) {
+      return with_iframe(scope);
+    })
+    .then(function(frame) {
+      frame.focus();
+      frame.contentWindow.navigator.serviceWorker.onmessage = t.step_func(function(evt) {
+        assert_equals(evt.data, true);
+
+        registration.unregister()
+        .then(function(result) {
+          frame.remove();
+          t.done();
+        });
+      });
+
+      frame.contentWindow.navigator.serviceWorker.controller.postMessage("ping");
+    })
+    .catch(unreached_rejection(t));
+}, "Check that focus state is focused.");
 
 </script>
 
