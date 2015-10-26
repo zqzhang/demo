@@ -55,7 +55,7 @@ async_test(function(t) {
             t.done();
         });
       });
-      
+
       serviceWorker.postMessage({port: messageChannel.port2}, [messageChannel.port2]);
     })
     .catch(unreached_rejection(t));

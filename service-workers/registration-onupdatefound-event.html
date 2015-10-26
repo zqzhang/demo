@@ -50,7 +50,6 @@ async_test(function(t) {
         assert_equals(evt.type, "updatefound", "the type of event");
         t.done();
       });
-
     })
     .catch(unreached_rejection(t));
 }, "Check that the onupdatefound event is fired when the service worker registration's installing worker changes.");
@@ -67,7 +66,6 @@ async_test(function(t) {
       registration.addEventListener("updatefound", t.step_func(function(evt) {
         t.done();
       }));
-
     })
     .catch(unreached_rejection(t));
 }, "Check that ServiceWorkerRegistration has implement addEventListener method.");

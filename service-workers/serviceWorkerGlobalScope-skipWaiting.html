@@ -40,7 +40,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 async_test(function(t) {
   var scope = "resources/blank-iframe.html"
   var script1 = "resources/empty-worker.js";
-  var script2 = "resources/globalscope-skipWaiting-worker.js";  
+  var script2 = "resources/globalscope-skipWaiting-worker.js";
   var registration;
 
   service_worker_unregister_and_register(t, script1, scope)
@@ -64,11 +64,12 @@ async_test(function(t) {
             t.done();
           });
       });
-      
-       navigator.serviceWorker.register(script2, {scope: scope});
+
+      navigator.serviceWorker.register(script2, {scope: scope});
     })
     .catch(unreached_rejection(t));
-}, "Check that the event onmessage is fired when it receives a message.");
+}, "Check that skipWaiting() method allows service worker to progress "
+    + "from the registration's waiting position to active.");
 
 </script>
 

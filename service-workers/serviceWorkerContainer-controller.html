@@ -48,7 +48,6 @@ async_test(function(t) {
       registration = r;
 
       return wait_for_state(t, registration.installing, "activated");
-
     })
     .then(function(state) {
       return with_iframe(scope);

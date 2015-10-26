@@ -59,10 +59,10 @@ async_test(function(t) {
     })
     .then(function(frame) {
       frame2 = frame;
-      
+
       var channel = new MessageChannel();
       channel.port1.onmessage = t.step_func(function(evt) {
-        var idRegExp = new RegExp("^[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}$");
+        var idRegExp = new RegExp("^[A-Z0-9]{8}-([A-Z0-9]{4}-){3}[A-Z0-9]{12}$");
         assert_equals(evt.data.length, 2);
         assert_regexp_match(evt.data[0], idRegExp);
         assert_regexp_match(evt.data[1], idRegExp);

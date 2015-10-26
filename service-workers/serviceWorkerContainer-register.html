@@ -47,7 +47,7 @@ async_test(function(t) {
         .then(function(registration) {
           var absoulteScope = new URL(scope, location).toString();
           assert_equals(registration.scope, absoulteScope);
-          
+
           registration.unregister()
             .then(function() {
               t.done();
@@ -68,7 +68,7 @@ async_test(function(t) {
       navigator.serviceWorker.register(scriptURL)
         .then(function(registration) {
           assert_equals(registration.scope, scope);
-          
+
           registration.unregister()
             .then(function() {
               t.done();

@@ -60,12 +60,12 @@ async_test(function(t) {
         assert_equals(evt.data.focused, false);
 
         registration.unregister()
-        .then(function(result) {
-          frame.remove();
-          t.done();
-        });
+          .then(function(result) {
+            frame.remove();
+            t.done();
+          });
       });
-      
+
       frame.contentWindow.navigator.serviceWorker.controller.postMessage(
         {port: channel.port2}, [channel.port2]);
     })

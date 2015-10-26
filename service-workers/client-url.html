@@ -64,7 +64,7 @@ async_test(function(t) {
             t.done();
           });
       });
-      
+
        frame_window.navigator.serviceWorker.controller.postMessage('ping');
     })
     .catch(unreached_rejection(t));

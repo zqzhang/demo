@@ -47,7 +47,7 @@ async_test(function(t) {
       registration = r;
       assert_true(registration instanceof EventTarget);
       assert_true(registration instanceof ServiceWorkerRegistration);
-      
+
       return wait_for_state(t, registration.installing, "installed");
     })
     .then(function(state) {

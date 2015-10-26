@@ -47,7 +47,7 @@ async_test(function(t) {
       registration = r;
       assert_true(registration instanceof EventTarget);
       assert_true(registration instanceof ServiceWorkerRegistration);
-      
+
       return wait_for_state(t, registration.installing, "activating");
     })
     .then(function(state) {
@@ -75,15 +75,14 @@ async_test(function(t) {
       registration = r;
       assert_true(registration instanceof EventTarget);
       assert_true(registration instanceof ServiceWorkerRegistration);
-      
+
       return wait_for_state(t, registration.installing, "activated");
-            console.log("start: ");
     })
     .then(function(state) {
       assert_equals(registration.installing, null);
       assert_equals(registration.waiting, null);
       assert_equals(registration.active.state, "activated");
-      
+
       registration.unregister()
         .then(function() {
           t.done();

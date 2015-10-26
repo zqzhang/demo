@@ -46,7 +46,6 @@ async_test(function(t) {
   service_worker_unregister_and_register(t, scriptURL, scope)
     .then(function(r) {
       registration = r;
-
       var serviceWorker = registration.installing;
 
       serviceWorker.onstatechange = t.step_func(function(evt) {
@@ -70,7 +69,6 @@ async_test(function(t) {
   service_worker_unregister_and_register(t, scriptURL, scope)
     .then(function(r) {
       registration = r;
-
       var serviceWorker = registration.installing;
 
       serviceWorker.onstatechange = t.step_func(function(evt) {
