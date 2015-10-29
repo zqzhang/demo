@@ -71,6 +71,49 @@ function wait_for_state(test, worker, state) {
   }));
 }
 
+function wait_for_update(test, registration) {
+  if (!registration || registration.unregister == undefined) {
+    return Promise.reject(new Error(
+      'wait_for_update must be passed a ServiceWorkerRegistration'));
+  }
+
+  return new Promise(test.step_func(function(resolve) {
+      registration.addEventListener('updatefound', test.step_func(function() {
+          resolve(registration.installing);
+        }));
+    }));
+}
+
+// Declare a test that runs entirely in the ServiceWorkerGlobalScope. The |url|
+// is the service worker script URL. This function:
+// - Instantiates a new test with the description specified in |description|.
+//   The test will succeed if the specified service worker can be successfully
+//   registered and installed.
+// - Creates a new ServiceWorker registration with a scope unique to the current
+//   document URL. Note that this doesn't allow more than one
+//   service_worker_test() to be run from the same document.
+// - Waits for the new worker to begin installing.
+// - Imports tests results from tests running inside the ServiceWorker.
+function service_worker_test(url, description) {
+  // If the document URL is https://example.com/document and the script URL is
+  // https://example.com/script/worker.js, then the scope would be
+  // https://example.com/script/scope/document.
+  var scope = new URL('scope' + window.location.pathname,
+                      new URL(url, window.location)).toString();
+  promise_test(function(test) {
+      return service_worker_unregister_and_register(test, url, scope)
+        .then(function(registration) {
+            add_completion_callback(function() {
+                registration.unregister();
+              });
+            return wait_for_update(test, registration)
+              .then(function(worker) {
+                  return fetch_tests_from_worker(worker);
+                });
+          });
+    }, description);
+}
+
 function with_iframe(url) {
   return new Promise(function(resolve) {
     var frame = document.createElement('iframe');
