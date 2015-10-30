@@ -1,10 +1,14 @@
-onmessage = function(evt) {
-  var port = evt.data.port;
+onactivate = function(evt) {
+  var result;
+
   self.clients.claim()
-    .then(function() {
-      port.postMessage("PASS");
+    .then(function(result) {
+      result = result;
+      return self.clients.matchAll();
     })
-    .catch(function(error) {
-      port.postMessage(error.message);
+    .then(function(clients) {
+      clients.forEach(function(client) {
+        client.postMessage(result == undefined);
+      });
     });
 }

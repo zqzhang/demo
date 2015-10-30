@@ -27,66 +27,46 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 
 <meta charset="utf-8">
-<title>ServiceWorker redundant state</title>
+<title>ServiceWorkerGlobalScope.close()</title>
 <link rel="author" title="Intel" href="http://www.intel.com">
 <link rel="author" title="Chunyan Wang" href="mailto:chunyanx.wang@intel.com">
-<link rel="help" href="https://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html#service-worker-state">
+<link rel="help" href="https://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html#service-worker-global-scope">
 <script src="../support/testharness.js"></script>
 <script src="../support/testharnessreport.js"></script>
 <script src="resources/test-helper.js"></script>
 <div id="log"></div>
 <script>
-async_test(function(t) {
-  var scope = "resources/"
-  var scriptURL = "resources/install-error-worker.js";
-  var registration;
 
-  assert_true("serviceWorker" in navigator);
+async_test(function(t) {
+  var scope = "resources/blank-iframe.html"
+  var scriptURL = "resources/globalscope-close-worker.js";
+  var registration;
 
   service_worker_unregister_and_register(t, scriptURL, scope)
     .then(function(r) {
       registration = r;
-      var serviceWorker = registration.installing;
 
-      serviceWorker.onstatechange = t.step_func(function(evt) {
-        assert_equals(serviceWorker.state, "redundant", "serviceWorker.state");
+      return wait_for_state(t, registration.installing, "activated");
+    })
+    .then(function(state) {
+      return with_iframe(scope);
+    })
+    .then(function(frame) {
+      var frame_window = frame.contentWindow;
+      frame_window.navigator.serviceWorker.onmessage = t.step_func(function(evt) {
+        assert_true(evt.data);
+
         registration.unregister()
           .then(function() {
+            frame.remove();
             t.done();
-        });
+          });
       });
+
+       frame_window.navigator.serviceWorker.controller.postMessage('ping');
     })
     .catch(unreached_rejection(t));
-}, "Check that the state is redundant if a service worker discarded due to an install failure.");
-
-async_test(function(t) {
-  var scope = "resources/"
-  var scriptURL = "resources/empty-worker.js";
-  var registration;
-
-  assert_true("serviceWorker" in navigator);
-
-  service_worker_unregister_and_register(t, scriptURL, scope)
-    .then(function(r) {
-      registration = r;
-      var serviceWorker = registration.installing;
-
-      serviceWorker.onstatechange = t.step_func(function(evt) {
-        assert_equals(serviceWorker.state, "redundant", "serviceWorker.state");
-        registration.unregister()
-          .then(function() {
-            t.done();
-        });
-      });
-    })
-    .catch(unreached_rejection(t));
-
-    service_worker_unregister_and_register(t, "resources/clients-matchall-worker.js", scope)
-    .then(function(r) {
-    })
-    .catch(function() {
-    });
-}, "Check that the state is redundant if a new service worker is replacing the current service worker.");
+}, "Check that ServiceWorkerGlobalScope.close() should throw an an 'InvalidAccessError' exception.");
 
 </script>
 
