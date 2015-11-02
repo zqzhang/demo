@@ -53,3 +53,5 @@ promise_test(function(test) {
     "Observed user timing entries should have only one entry");
   });
 }, "Observing filter is replaced by a new filter");
+
+done();

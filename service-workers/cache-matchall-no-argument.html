@@ -64,7 +64,7 @@ async_test(function(t) {
       registration.active.postMessage({port: channel.port2}, [channel.port2]);
     })
     .catch(unreached_rejection(t));
-}, "Check that cache.match() returns with no argument should return all response.");
+}, "Check that cache.matchAll() with no argument should return all response.");
 
 </script>
 

@@ -27,15 +27,18 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 
 <meta charset="utf-8">
-<title>Resource Timing for Web Workers</title>
+<title>FetchEvent constructor</title>
 <link rel="author" title="Intel" href="http://www.intel.com">
 <link rel="author" title="Chunyan Wang" href="mailto:chunyanx.wang@intel.com">
-<link rel="help" href="http://w3c.github.io/resource-timing/#resource-timing">
+<link rel="help" href="https://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html#fetch-event-section">
 <script src="../support/testharness.js"></script>
 <script src="../support/testharnessreport.js"></script>
+<script src="resources/test-helper.js"></script>
 <div id="log"></div>
 <script>
-fetch_tests_from_worker(
-  new Worker('resource-timing.worker.js'));
+
+service_worker_test(
+  "resources/fetchevent-constructor-worker.js",
+  "Check that FetchEvent constructor.");
 </script>
 

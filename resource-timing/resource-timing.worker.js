@@ -24,3 +24,5 @@ promise_test(function(test) {
       assert_equals(performance.getEntriesByType('resource').length, 0);
     });
 }, "Test Resource Timing for Web Workers");
+
+done();

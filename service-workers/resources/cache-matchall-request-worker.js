@@ -22,15 +22,19 @@ self.oninstall = function(evt) {
 
 self.onmessage = function(evt) {
   var port = evt.data.port;
+  var response;
 
   caches.open(CACHE_NAME)
     .then(function(cache) {
-      return cache.matchAll();
+      var request = new Request("https://example.com/a");
+      return cache.matchAll(request);
     }).then(function(res) {
+      response = res;
+      return response[0].text();
+    }).then(function(value) {
       port.postMessage({
-        isArray: Array.isArray(res),
-        isResponse: res[0] instanceof Response,
-        responseLength: res.length,
-      });
+        responseLength: response.length,
+        responseValue: value
+      })
     });
 }

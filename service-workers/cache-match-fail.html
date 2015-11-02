@@ -39,7 +39,8 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 async_test(function(t) {
   var scope = "resources/"
-  var scriptURL = "resources/cache-match-empty-worker.js";
+  var scriptURL = "resources/cache-match-failure-worker.js";
+
   var registration;
 
   service_worker_unregister_and_register(t, scriptURL, scope)

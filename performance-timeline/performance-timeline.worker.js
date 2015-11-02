@@ -33,3 +33,4 @@ promise_test(function(test) {
   });
 }, "Performance for Web Workers");
 
+done();
