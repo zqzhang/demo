@@ -54,12 +54,14 @@ async_test(function(t) {
 
       return registration.update();
     })
-    .then(function() {
-      iframe.remove();
-      return registration.unregister();
-    })
-    .then(function() {
-      t.done();
+    .then(function(result) {
+      assert_equals(result, undefined);
+
+      registration.unregister()
+        .then(function() {
+          iframe.remove();
+          t.done();
+        });
     })
     .catch(unreached_rejection(t));
 }, "Check that ServiceWorkerRegistration.update() returns a promise.");
