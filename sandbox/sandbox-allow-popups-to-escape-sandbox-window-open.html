@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<!--
+Copyright (c) 2015 Intel Corporation.
+
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
+
+* Redistributions of works must retain the original copyright notice, this list
+  of conditions and the following disclaimer.
+* Redistributions in binary form must reproduce the original copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+* Neither the name of Intel Corporation nor the names of its contributors
+  may be used to endorse or promote products derived from this work without
+  specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY INTEL CORPORATION "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL INTEL CORPORATION BE LIABLE FOR ANY DIRECT,
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
+OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+
+<meta charset="utf-8">
+<title>iframe sandbox set to 'allow-popups-to-escape-sandbox'</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="author" title="Chunyan Wang" href="mailto:chunyanx.wang@intel.com">
+<link rel="help" href="https://wiki.whatwg.org/wiki/Iframe_sandbox_improvments">
+<script src="../support/testharness.js"></script>
+<script src="../support/testharnessreport.js"></script>
+<div id="log"></div>
+<iframe id="testFrame" src="resources/iframe.html"
+        sandbox="allow-scripts allow-same-origin allow-popups-to-escape-sandbox"
+        onload="init()" style="display:none">
+</iframe>
+
+<script>
+function init() {
+  async_test(function(t) {
+    var url = "resources/popup.html";
+    var iframe = document.getElementById("testFrame");
+    var win_popUp = iframe.contentWindow.open(url, "_blank");
+    iframe.contentWindow.onmessage = t.step_func(function(evt) {
+      assert_equals(evt.data, "Excute JavaScript");
+      win_popUp.close();
+      t.done();
+    });
+  }, "Check that open a new window by window.open() " +
+      "in a 'allow-popups-to-escape-sandbox' sandbox iframe.");
+}
+
+</script>
+
