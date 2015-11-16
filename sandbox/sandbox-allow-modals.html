@@ -27,61 +27,35 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 
 <meta charset="utf-8">
-<title>iframe sandbox set to 'allow-modals'</title>
+<meta http-equiv="Content-Security-Policy" content="sandbox allow-scripts allow-modals">
+<title>sandbox set to 'allow-modals'</title>
 <link rel="author" title="Intel" href="http://www.intel.com">
 <link rel="author" title="Chunyan Wang" href="mailto:chunyanx.wang@intel.com">
 <link rel="help" href="https://wiki.whatwg.org/wiki/Iframe_sandbox_improvments">
 <script src="../support/testharness.js"></script>
 <script src="../support/testharnessreport.js"></script>
 <div id="log"></div>
-<iframe id="testFrame" src="resources/iframe.html"
-        sandbox="allow-scripts allow-same-origin allow-modals"
-        onload="init()" style="display:none;">
-</iframe>
-
 <script>
 
-function init() {
-  var iframe = document.getElementById("testFrame");
-  var btnAlert = iframe.contentDocument.getElementById("btnalert");
-  var btnConfirm = iframe.contentDocument.getElementById("btnconfirm");
-  var btnPrompt = iframe.contentDocument.getElementById("btnprompt");
-  var btnPrint = iframe.contentDocument.getElementById("btnprint");
+test(function () {
+    var result = alert("Text");
+    assert_equals(result, undefined);
+}, "alert() returns 'undefined' in a 'allow-modals' sandboxed page.");
 
-  var t_alert = async_test("Check that alert() returns 'undefined' in a 'allow-modals' sandboxed iframe.");
-  var t_confirm = async_test("Check that confirm() returns false in a 'allow-modals' sandboxed iframe.");
-  var t_prompt = async_test("Check that prompt() returns null in a 'allow-modals' sandboxed iframe.");
-  var t_print = async_test("Check that print() returns 'undefined' in a 'allow-modals' sandboxed iframe.");
+test(function () {
+    var result = print();
+    assert_equals(result, undefined);
+}, "print() returns 'undefined' in a 'allow-modals' sandboxed page.");
 
-  btnAlert.onclick = t_alert.step_func(function(evt) {
-    var value = alert("Hello");
-    assert_equals(value, undefined);
-    t_alert.done();
-  });
+test(function () {
+    var result = confirm("Text");
+    assert_equals(result, true);
+}, "confirm() returns 'true' in a 'allow-modals' sandboxed page.");
 
-  btnConfirm.onclick = t_confirm.step_func(function(evt) {
-    var value = confirm("Hello");
-    assert_equals(value, false);// Chrome 47 unstable get true
-    t_confirm.done();
-  });
-
-  btnPrompt.onclick = t_prompt.step_func(function(evt) {
-    var value = prompt("Hello");
-    assert_equals(value, null);// Chrome 47 unstable get empty string
-    t_prompt.done();
-  });
-
-  btnPrint.onclick = t_print.step_func(function(evt) {
-    var value = window.print();
-    assert_equals(value, undefined);
-    t_print.done();
-  });
-
-  btnAlert.click();
-  btnConfirm.click();
-  btnPrompt.click();
-  btnPrint.click();
-}
+test(function () {
+    var result = prompt("Text");
+    assert_equals(result, null);// Chrome 46 beta get empty string
+}, "prompt() returns 'null' in a 'allow-modals' sandboxed page.");
 
 </script>
 

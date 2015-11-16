@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="sandbox allow-scripts allow-popups allow-popups-to-escape-sandbox">
+<title>sandbox set to 'allow-popups-to-escape-sandbox'</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="author" title="Chunyan Wang" href="mailto:chunyanx.wang@intel.com">
+<link rel="help" href="https://wiki.whatwg.org/wiki/Iframe_sandbox_improvments">
+<script src="../support/testharness.js"></script>
+<script src="../support/testharnessreport.js"></script>
+
+<a target="_blank" href="resources/post-origin-to-opener.html"></a>
+<div id="log"></div>
+<script>
+
+async_test(function(t) {
+  window.addEventListener("message", t.step_func(function(evt) {
+    assert_equals(document.origin, "null");
+    assert_equals(evt.data.origin, "https://zqzhang.github.io"); 
+    t.done();
+  }));
+
+  var link = document.querySelector("a");
+  link.click();
+
+}, "Check that sandbox not inherited via target='_blank' " +
+    "when 'allow-popups-to-escape-sandbox' present");
+
+async_test(function(t) {
+  var url = "resources/post-origin-to-opener.html";
+  var win_popUp = window.open(url);
+  window.onmessage = t.step_func(function(evt) {
+    assert_equals(document.origin, "null");
+    assert_equals(evt.data.origin, "https://zqzhang.github.io");
+    t.done();
+  });
+}, "Check that sandbox not inherited via window.open() " +
+    "when 'allow-popups-to-escape-sandbox' present");
+
+</script>

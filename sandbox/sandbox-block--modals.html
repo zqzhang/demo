@@ -27,31 +27,35 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 
 <meta charset="utf-8">
-<title>iframe sandbox set to 'allow-popups-to-escape-sandbox'</title>
+<meta http-equiv="Content-Security-Policy" content="sandbox allow-scripts">
+<title>sandbox block modals</title>
 <link rel="author" title="Intel" href="http://www.intel.com">
 <link rel="author" title="Chunyan Wang" href="mailto:chunyanx.wang@intel.com">
 <link rel="help" href="https://wiki.whatwg.org/wiki/Iframe_sandbox_improvments">
 <script src="../support/testharness.js"></script>
 <script src="../support/testharnessreport.js"></script>
 <div id="log"></div>
-<iframe id="testFrame" src="resources/iframe.html"
-        sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
-        onload="init()" style="display:none">
-</iframe>
-
 <script>
-function init() {
-  async_test(function(t) {
-    var iframe = document.getElementById("testFrame");
-    var link = iframe.contentDocument.querySelector("a");
-    link.click();
-    iframe.contentWindow.onmessage = t.step_func(function(evt) {
-      assert_equals(evt.data, "Excute JavaScript");
-      t.done();
-    });
-  }, "Check that open a new window by link click " +
-      "in a 'allow-popups-to-escape-sandbox' sandbox iframe.");
-}
+
+test(function () {
+    var result = alert("Text");
+    assert_equals(result, undefined);
+}, "alert() returns 'undefined' in a blocked modal sandboxed page.");
+
+test(function () {
+    var result = print();
+    assert_equals(result, undefined);
+}, "print() returns 'undefined' in a blocked modal sandboxed page.");
+
+test(function () {
+    var result = confirm("Text");
+    assert_equals(result, false);
+}, "confirm() returns false in a blocked modal sandboxed page.");
+
+test(function () {
+    var result = prompt("Text");
+    assert_equals(result, null);
+}, "prompt() returns null in a blocked modal sandboxed page.");
 
 </script>
 
