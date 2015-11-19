@@ -517,19 +517,27 @@ policies and contribution forms [3].
 
     function promise_test(func, name, properties) {
         var test = async_test(name, properties);
-        Promise.resolve(test.step(func, test, test))
-            .then(
-                function() {
-                    test.done();
-                })
-            .catch(test.step_func(
-                function(value) {
-                    if (value instanceof AssertionError) {
-                        throw value;
-                    }
-                    assert(false, "promise_test", null,
-                           "Unhandled rejection with value: ${value}", {value:value});
-                }));
+        // If there is no promise tests queue make one.
+        test.step(function() {
+            if (!tests.promise_tests) {
+                tests.promise_tests = Promise.resolve();
+            }
+        });
+        tests.promise_tests = tests.promise_tests.then(function() {
+            return Promise.resolve(test.step(func, test, test))
+                .then(
+                    function() {
+                        test.done();
+                    })
+                .catch(test.step_func(
+                    function(value) {
+                        if (value instanceof AssertionError) {
+                            throw value;
+                        }
+                        assert(false, "promise_test", null,
+                               "Unhandled rejection with value: ${value}", {value:value});
+                    }));
+        });
     }
 
     function promise_rejects(test, expected, promise) {
@@ -650,6 +658,14 @@ policies and contribution forms [3].
         object.addEventListener(event, callback, false);
     }
 
+    function step_timeout(f, t) {
+        var outer_this = this;
+        var args = Array.prototype.slice.call(arguments, 2);
+        return setTimeout(function() {
+            f.apply(outer_this, args);
+        }, t * tests.timeout_multiplier);
+    }
+
     expose(test, 'test');
     expose(async_test, 'async_test');
     expose(promise_test, 'promise_test');
@@ -658,6 +674,7 @@ policies and contribution forms [3].
     expose(setup, 'setup');
     expose(done, 'done');
     expose(on_event, 'on_event');
+    expose(step_timeout, 'step_timeout');
 
     /*
      * Return a string truncated to the given length, with ... added at the end
@@ -1089,7 +1106,7 @@ policies and contribution forms [3].
     function _assert_inherits(name) {
         return function (object, property_name, description)
         {
-            assert(typeof object === "object",
+            assert(typeof object === "object" || typeof object === "function",
                    name, description,
                    "provided value is not an object");
 
@@ -1159,6 +1176,7 @@ policies and contribution forms [3].
                 NO_MODIFICATION_ALLOWED_ERR: 'NoModificationAllowedError',
                 NOT_FOUND_ERR: 'NotFoundError',
                 NOT_SUPPORTED_ERR: 'NotSupportedError',
+                INUSE_ATTRIBUTE_ERR: 'InUseAttributeError',
                 INVALID_STATE_ERR: 'InvalidStateError',
                 SYNTAX_ERR: 'SyntaxError',
                 INVALID_MODIFICATION_ERR: 'InvalidModificationError',
@@ -1185,6 +1203,7 @@ policies and contribution forms [3].
                 NoModificationAllowedError: 7,
                 NotFoundError: 8,
                 NotSupportedError: 9,
+                InUseAttributeError: 10,
                 InvalidStateError: 11,
                 SyntaxError: 12,
                 InvalidModificationError: 13,
@@ -1413,6 +1432,14 @@ policies and contribution forms [3].
             assert_unreached(description);
         });
     };
+
+    Test.prototype.step_timeout = function(f, timeout) {
+        var test_this = this;
+        var args = Array.prototype.slice.call(arguments, 2);
+        return setTimeout(this.step_func(function() {
+            return f.apply(test_this, args);
+        }, timeout * tests.timeout_multiplier));
+    }
 
     Test.prototype.add_cleanup = function(callback) {
         this.cleanup_callbacks.push(callback);
@@ -2421,7 +2448,7 @@ policies and contribution forms [3].
 
         // Create a pattern to match stack frames originating within testharness.js.  These include the
         // script URL, followed by the line/col (e.g., '/resources/testharness.js:120:21').
-        var re = new RegExp(get_script_url() + ":\\d+:\\d+");
+        var re = new RegExp((get_script_url() || "\\btestharness.js") + ":\\d+:\\d+");
 
         // Some browsers include a preamble that specifies the type of the error object.  Skip this by
         // advancing until we find the first stack frame originating from testharness.js.
@@ -2534,6 +2561,10 @@ policies and contribution forms [3].
     /** Returns the 'src' URL of the first <script> tag in the page to include the file 'testharness.js'. */
     function get_script_url()
     {
+        if (!('document' in self)) {
+            return undefined;
+        }
+
         var scripts = document.getElementsByTagName("script");
         for (var i = 0; i < scripts.length; i++) {
             var src;
