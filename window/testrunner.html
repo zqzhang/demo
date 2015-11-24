@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>TestRunner and eventSender</title>
+<link rel="help" href="https://webbluetoothcg.github.io/web-bluetooth/tests/">
+<script src="../support/testharness.js"></script>
+<script src="../support/testharnessreport.js"></script>
+<div id="log"></div>
+<script>
+  test(function () {
+    assert_exists(window, testRunner, "The user agent does not support TestRunner");
+    assert_exists(window, eventSender, "The user agent does not support eventSender");
+  }, "Check if user agent support TestRunner and eventSender");
+</script>
