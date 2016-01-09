@@ -6,6 +6,8 @@
 
 var test = require('nodeunit');
 
+var three = 3;
+
 var squareAsync = function(a, cb) {
   result = a * a;
   cb(result);
