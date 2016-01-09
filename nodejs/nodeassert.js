@@ -9,9 +9,9 @@
 
 var assert = require('assert');
 
-// Listing 11-1. Node.js assert Basics
-
 var three = 3;
+
+// Listing 11-1. Node.js assert Basics
 
 assert.equal(three, '3', '3 equals "3"');
 
@@ -19,7 +19,7 @@ assert.strictEqual('3', three.toString(), '3 and "3" are not strictly equal');
 
 assert.notEqual(three, 'three', '3 not equals three');
 
-// assert.ok(false, 'not truthy ');
+assert.ok(false, 'not truthy ');
 
 assert.ok(true, 'truthy');
 
