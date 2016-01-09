@@ -43,7 +43,7 @@ module.exports = {
   },
 
   // Listing 11-5. Nodeunit Asynchronous Test
-  '11-4': {
+  '11-5': {
     'squareAsync': function(test) {
       test.expect(2);
 
