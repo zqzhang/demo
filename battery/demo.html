@@ -1,53 +1,39 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
-<title>Battery Status Demo</title>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Battery Status API Example</title>
+  <script>
+    window.onload = function () {
+      function updateBatteryStatus(battery) {
+        document.querySelector('#charging').textContent = battery.charging ? 'charging' : 'not charging';
+        document.querySelector('#level').textContent = battery.level;
+        document.querySelector('#dischargingTime').textContent = battery.dischargingTime / 60;
+      }
 
-<div id="log"></div>
+      navigator.getBattery().then(function(battery) {
+        // Update the battery status initially when the promise resolves ...
+        updateBatteryStatus(battery);
 
-<script>
-(function() {
+        // .. and for any subsequent updates.
+        battery.onchargingchange = function () {
+          updateBatteryStatus(battery);
+        };
 
-  var logBatteryStatus = function (battery, eventtype) {
-    var message = "";
-    if (arguments.length === 2) {
-      message += "Event: " + eventtype + " ";
-    }
-    message += "{charging: " + battery.charging +
-               ", chargingTime: " + battery.chargingTime +
-               ", dischargingTime: " + battery.dischargingTime +
-               ", level: " + battery.level +
-               "}";
-    document.querySelector("#log").innerHTML += message + "<br/>";
-  };
+        battery.onlevelchange = function () {
+          updateBatteryStatus(battery);
+        };
 
-  var batterySuccess = function (battery) {
-    // Update the battery status initially when the promise resolves ...
-    logBatteryStatus(battery);
-
-    // .. and for any subsequent updates.
-    battery.onchargingchange = function () {
-      logBatteryStatus(battery, "chargingchange");
+        battery.ondischargingtimechange = function () {
+          updateBatteryStatus(battery);
+        };
+      });
     };
-
-    battery.onchargingtimechange = function () {
-      logBatteryStatus(battery, "chargingtimechange");
-    };
-
-    battery.ondischargingtimechange = function () {
-      logBatteryStatus(battery, "dischargingtimechange");
-    };
-
-    battery.onlevelchange = function () {
-      logBatteryStatus(battery, "levelchange");
-    };
-  };
-
-  var batteryFailure = function (error) {
-    document.querySelector("#log").innerHTML += error.message + "<br/>";
-  };
-      
-  navigator.getBattery().then(batterySuccess, batteryFailure);
-
-})();
-</script>
-
+  </script>
+</head>
+<body>
+  <div id="charging">(charging state unknown)</div>
+  <div id="level">(battery level unknown)</div>
+  <div id="dischargingTime">(discharging time unknown)</div>
+</body>
+</html>
