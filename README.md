@@ -52,10 +52,10 @@ an installable web application for Android platforms following these steps:
    git clone https://github.com/zqzhang/demo.git
    ```
 
-7. Go to the parent dierectory of demo
+7. Go to the parent directory of demo
 
    ```sh
-   cd path/to/parent/dierectory/of/demo
+   cd path/to/parent/directory/of/demo
    ```
 
 8. Create APK package as follows:
@@ -107,7 +107,7 @@ Build an installable web application for Windows platforms following these steps
    git clone https://github.com/zqzhang/demo.git
    ```
 
-4. Go to the parent dierectory of demo
+4. Go to the parent directory of demo
 
 5. Create MSI file as follows:
 
