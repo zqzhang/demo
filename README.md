@@ -13,47 +13,110 @@ https://zqzhang.github.io/demo/
 Based on the [Crosswalk Project](https://crosswalk-project.org/), one can build
 an installable web application for Android platforms following these steps:
 
-1. Download and unpack Crosswalk Project for Android package (`.zip`) from
+1. Download Crosswalk Project for Android package (`.zip`) from
    https://download.01.org/crosswalk/releases/crosswalk/android/:
 
    ```sh
-   wget url/to/android/canary/16.45.407.0/crosswalk-16.45.407.0.zip
-   unzip crosswalk-16.45.407.0.zip
+   wget url/to/android/canary/18.46.471.0/crosswalk-18.46.471.0.zip
    ```
 
-2. Go to the unpacked Crosswalk Android directory:
+2. Clone Crosswalk-app-tools:
 
    ```sh
-   cd crosswalk-16.45.407.0
+   git clone https://github.com/crosswalk-project/crosswalk-app-tools.git
    ```
 
-3. Run the `make_apk.py` script with Python as follows:
+3. Set Environment variables:
 
    ```sh
-   python make_apk.py --package=com.zqzhang.demo \
-       --manifest=/path/to/demo/manifest.json
+   vim .bashrc
+   export CROSSWALK_APP_TOOLS_CACHE_DIR=path/to/crosswalk/directory
+   export PATH=path/to/crosswalk-app-tool/src:$PATH
    ```
 
-   This will package the application defined in the specified manifest.json file
-   and produce two apk files from it, one for x86 architecture and one for ARM.
-   The apk files will end up in the directory where you ran the script.
-   Each file is given the name set in the manifest, with any filesystem-sensitive
-   characters removed and an architecture identifier ("x86" or "arm") appended.
-   For this demo, the output files are `Demo_0.0.1_arm.apk` and `Demo_0.0.1_x86.apk`.
+4. Go to crosswalk-app-tools directory:
 
-4. Install the application on the target.
+   ```sh
+   cd path/to/crosswalk-app-tools
+   ```
+
+5. Install crosswalk-app-tools:
+
+   ```sh
+   sudo npm install
+   ```
+
+6. Clone demo:
+
+   ```sh
+   git clone https://github.com/zqzhang/demo.git
+   ```
+
+7. Go to the parent dierectory of demo
+
+   ```sh
+   cd path/to/parent/dierectory/of/demo
+   ```
+
+8. Create APK package as follows:
+
+   ```sh
+   crosswalk-pkg --crosswalk=path/to/crosswalk/android/crosswalk-18.46.471.0.zip demo/
+   ```
+
+   This will produce two apk files, one for x86 architecture and one for ARM.
+   The apk files will end up in the parent directory of the application.
+   Each file is given the name by append "xwalk_package_id", "xwalk_app_version" in the
+   manifest, and an architecture identifier ("x86" or "arm"). For this demo, the output
+   files are `io.github.zqzhang.demo-0.1-debug.armabi-v7a.apk` and
+   `io.github.zqzhang.demo-0.1-debug.x86.apk`.
+
+9. Install the application on the target.
 
    If installing on an x86 device:
 
    ```sh
-   adb install -r Demo_0.0.1_x86.apk
+   adb install -r io.github.zqzhang.demo-0.1-debug.x86.apk
    ```
 
    If installing on an ARM device:
 
    ```sh
-   adb install -r Demo_0.0.1_arm.apk
+   adb install -r io.github.zqzhang.demo-0.1-debug.armabi-v7a.apk
    ```
 
    The `-r` flag stands for "reinstall". It is not required for the first
    installation, but useful for subsequent reinstalls of the same package.
+
+## Demos on Winodws
+
+Build an installable web application for Windows platforms following these steps:
+
+1. Download Crosswalk Project for Windows package (`.zip`) from
+   https://download.01.org/crosswalk/releases/crosswalk/windows/
+
+2. Install crosswalk-app-tools:
+
+   ```cmd
+   npm install -g crosswalk-app-tools
+   ```
+
+3. Clone demo:
+
+   ```sh
+   git clone https://github.com/zqzhang/demo.git
+   ```
+
+4. Go to the parent dierectory of demo
+
+5. Create MSI file as follows:
+
+   ```cmd
+   crosswalk-pkg --crosswalk=path\to\crosswalk\windows\crosswalk-18.46.468.0.zip --platforms=windows demo\
+   ```
+
+   This will produce a msi file, it will end up in the parent directory of the application.
+
+6. Install the application on windows:
+
+   Double click the msi file to install.
