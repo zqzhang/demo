@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Battery Status API Example</title>
+  <script>
+    window.onload = function () {
+      function updateBatteryStatus(battery, event) {
+        var node = document.createElement('div');
+        if (event) {
+          node.textContent = 'Event ' + event + ': ';
+        }
+        node.textContent += battery.charging ? 'charging:' : 'not charging:';
+        node.textContent += ' chargingTime ' + battery.chargingTime;
+        node.textContent += ' dischargingTime ' + battery.dischargingTime;
+        node.textContent += ' level ' + battery.level;
+        document.body.appendChild(node);
+      }
+
+      navigator.getBattery().then(function(battery) {
+        // Update the battery status initially when the promise resolves ...
+        updateBatteryStatus(battery);
+
+        // .. and for any subsequent updates.
+        battery.onchargingchange = function () {
+          updateBatteryStatus(battery, 'chargingchange');
+        };
+
+        battery.onchargingtimechange = function () {
+          updateBatteryStatus(battery, 'chargingtimechange');
+        };
+
+        battery.ondischargingtimechange = function () {
+          updateBatteryStatus(battery, 'dischargingtimechange');
+        };
+
+        battery.onlevelchange = function () {
+          updateBatteryStatus(battery, 'levelchange');
+        };
+      });
+    };
+  </script>
+</head>
+<body>
+  <h1>Battery Status API Example</h1>
+</body>
+</html>
