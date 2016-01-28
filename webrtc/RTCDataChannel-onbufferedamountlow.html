@@ -33,9 +33,14 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <link rel="help" href="http://w3c.github.io/webrtc-pc/#rtcdatachannel">
 <script src="../support/testharness.js"></script>
 <script src="../support/testharnessreport.js"></script>
-<script src="support.js"></script>
+<p class="instructions">When prompted, accept to share your audio and video stream.</p>
+<h1 class="instructions">Description</h1>
+<p class="instructions">This test checks that distinct mediastream tracks have distinct ids.</p>
 <div id="log"></div>
+<script src="../support/vendor-prefix.js"
+        data-prefixed-objects='[{"ancestors":["window"], "name":"RTCPeerConnection"}]'></script>
 <script>
+
 async_test(function(t) {
   var localConnection = new RTCPeerConnection(null);
   var remoteConnection = new RTCPeerConnection(null);
@@ -51,53 +56,32 @@ async_test(function(t) {
 
   sendChannel.onopen = t.step_func(function(evt) {
     if(sendChannel.readyState == "open") {
-
       sendChannel.addEventListener('bufferedamountlow', t.step_func(function(evt) {
+        assert_less_than_equal(sendChannel.bufferedAmount, sendChannel.bufferedAmountLowThreshold);
         t.done();
       }));
-
-      var count = 100;
-      while(count >=0) {
+      for(var i = 0; i < 100; i++) {
         sendChannel.send(buffer);
-        count--;
       }
     }
   });
 
   localConnection.onicecandidate = t.step_func(function(evt) {
     if(evt.candidate) {
-      remoteConnection.addIceCandidate(event.candidate, function sucess() {
-      }, function showConnectionError(error) {
-        t.step(function() {
-          assert_unreached("Failed to add Ice Candidate: " + error.toString());
-        });
-      })
+      remoteConnection.addIceCandidate(evt.candidate);
     }
   });
 
   remoteConnection.onicecandidate = t.step_func(function(evt) {
     if(evt.candidate) {
-      localConnection.addIceCandidate(event.candidate, function success() {
-      }, function showConnectionError(error) {
-        t.step(function() {
-          assert_unreached("Failed to add Ice Candidate: " + error.toString());
-        })
-      });
+      localConnection.addIceCandidate(evt.candidate);
     }
-  });
-
-  remoteConnection.ondatachannel = t.step_func(function(evt) {
-    receiveChannel = evt.channel;
-    receiveChannel.onmessage = t.step_func(function(evt) {
-      var size = evt.data.length;
-    });
   });
 
   localConnection.createOffer(function getDescription(desc) {
     t.step(function() {
       localConnection.setLocalDescription(desc);
       remoteConnection.setRemoteDescription(desc);
-
       remoteConnection.createAnswer(function getAnswer(answer) {
         t.step(function() {
           remoteConnection.setLocalDescription(answer);
@@ -105,18 +89,15 @@ async_test(function(t) {
         });
       }, function showAnswerError(error) {
         t.step(function() {
-          assert_unreached("Failed to create answer: " + error.toString());
+          assert_unreached(error.name + ":" + error.message);
         });
       });
-
     });
-
   }, function showConnectionError(error) {
     t.step(function() {
-      assert_unreached("Failed to create session description: " + error.toString());
+      assert_unreached(error.name + ":" + error.message);
     });
   });
-
 }, "Check that RTCDataChannel monotors with bufferedamountlow event.");
 
 </script>
