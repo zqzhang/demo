@@ -60,9 +60,6 @@ promise_test(function(t) {
       assert_equals(evt.data.mode, "same-origin", "the default mode flag of request");
       assert_equals(evt.data.credentials, "include", "the default mode flag of request");
       assert_equals(evt.data.redirect, "manual", "the default mode flag of request");
-      assert_equals(evt.data.referrer,
-        new URL(scriptURL, location).toString(),
-        "request.referrer");
       frame.remove();
       return service_worker_unregister_and_done(t, scope);
     }) 

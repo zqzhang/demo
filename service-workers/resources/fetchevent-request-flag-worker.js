@@ -10,8 +10,7 @@ self.onmessage = function(evt) {
       client.postMessage({
         mode: request.mode,
         credentials: request.credentials,
-        redirect: request.redirect,
-        referrer: request.referrer
+        redirect: request.redirect
       });
     });
   });
