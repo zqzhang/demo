@@ -20,9 +20,14 @@
   "xwalk_android_animatable_view": false,
   "xwalk_android_keep_screen_on": false,
   "xwalk_android_permissions": [
+    "ACCESS_FINE_LOCATION",
     "ACCESS_NETWORK_STATE",
     "ACCESS_WIFI_STATE",
-    "INTERNET"
+    "CAMERA",
+    "INTERNET",
+    "MODIFY_AUDIO_SETTINGS",
+    "RECORD_AUDIO",
+    "VIBRATE"
   ],
   "xwalk_windows_update_id": "95738382-5443-6859-2399-131646379835"
 }
