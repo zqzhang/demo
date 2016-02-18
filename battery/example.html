@@ -5,10 +5,13 @@
   <title>Battery Status API Example</title>
   <script>
     window.onload = function () {
+      var numOfEvents = 0;
+
       function updateBatteryStatus(battery, event) {
         var node = document.createElement('div');
         if (event) {
-          node.textContent = 'Event ' + event + ': ';
+          numOfEvents += 1;
+          node.textContent = 'Event #' + numOfEvents + ' ' + event + ': ';
         }
         node.textContent += battery.charging ? 'charging:' : 'not charging:';
         node.textContent += ' chargingTime ' + battery.chargingTime;
