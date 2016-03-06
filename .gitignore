@@ -1,0 +1,8 @@
+*.py[co]
+*.sw[po]
+*.zip
+*~
+*#
+\#*
+node_modules
+
