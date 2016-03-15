@@ -40,9 +40,9 @@ test(function() {
   var context = new AudioContext();
   var iIRFilterNode = context.createIIRFilter([1], [1]);
   assert_true(iIRFilterNode instanceof IIRFilterNode, "createIIRFilter method return IIRFilterNode object");
-  assert_own_property(iIRFilterNode, "getFrequencyResponse", "IIRFilterNode has implemented getFrequencyResponse");
-  assert_equals(iIRFilterNode.numberOfInputs, "1", "iIRFilterNode.numberOfInputs equals 1");
-  assert_equals(iIRFilterNode.numberOfOutputs, "1", "iIRFilterNode.numberOfOutputs equals 1");
+  assert_true("getFrequencyResponse" in iIRFilterNode, "IIRFilterNode has implemented getFrequencyResponse");
+  assert_equals(iIRFilterNode.numberOfInputs, 1, "iIRFilterNode.numberOfInputs equals 1");
+  assert_equals(iIRFilterNode.numberOfOutputs, 1, "iIRFilterNode.numberOfOutputs equals 1");
   assert_equals(iIRFilterNode.channelInterpretation, "speakers", "iIRFilterNode.channelInterpretation equals speakers");
   assert_equals(iIRFilterNode.channelCountMode, "max", "iIRFilterNode.channelCountMode equals max");
   var fz = new Float32Array(128);

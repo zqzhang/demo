@@ -46,14 +46,15 @@ promise_test(function(t) {
     request.onload = function() {
       resolve(request.response);
     };
+    request.send();
   })
   .then(function(audioData) {
     var context = new AudioContext();
     return context.decodeAudioData(audioData);
   })
   .then(function(buffer) {
-    var offlineAudioContext = new OfflineAudioContext(2, 444100*40, 44100);
-    var source = offlineAudioContext.createBufferSource();
+    offlineAudioContext = new OfflineAudioContext(2, 444100*40, 44100);
+    source = offlineAudioContext.createBufferSource();
     source.buffer = buffer;
     source.connect(offlineAudioContext.destination);
     source.start();
@@ -65,13 +66,10 @@ promise_test(function(t) {
   .then(function() {
     return offlineAudioContext.resume();
   })
-  .then(function() {
-    assert_equals(offlineAudioContext.state, "running");
-  })
   .catch(function(ex) {
     assert_unreached("unreached here, get anexpected exception: " + ex.message);
   });
-}, "Check that decodeAudioData returns a Promise");
+}, "Check that  an audio context can be suspended and resumed");
 
 </script>
 
