@@ -61,7 +61,7 @@ promise_test(function(t) {
     return offlineAudioContext.startRendering();
   })
   .then(function(renderedBuffer) {
-    return offlineAudioContext.suspend(100);
+    return offlineAudioContext.suspend(renderedBuffer + 2);
   })
   .then(function() {
     return offlineAudioContext.resume();
