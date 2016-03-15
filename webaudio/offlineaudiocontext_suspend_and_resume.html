@@ -36,39 +36,19 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <div id="log"></div>
 <script>
 promise_test(function(t) {
-  var offlineAudioContext;
-  var source;
-  var url = "../support/sound_5.oga";
-  return new Promise(function(resolve) {
-    var request = new XMLHttpRequest();
-    request.open("GET", url, true);
-    request.responseType = "arraybuffer";
-    request.onload = function() {
-      resolve(request.response);
-    };
-    request.send();
-  })
-  .then(function(audioData) {
-    var context = new AudioContext();
-    return context.decodeAudioData(audioData);
-  })
-  .then(function(buffer) {
-    offlineAudioContext = new OfflineAudioContext(2, 444100*40, 44100);
-    source = offlineAudioContext.createBufferSource();
-    source.buffer = buffer;
-    source.connect(offlineAudioContext.destination);
-    source.start();
-    return offlineAudioContext.startRendering();
-  })
-  .then(function(renderedBuffer) {
-    return offlineAudioContext.suspend(renderedBuffer.duration + 0.002);
-  })
-  .then(function() {
-    return offlineAudioContext.resume();
-  })
-  .catch(function(ex) {
-    assert_unreached("unreached here, get anexpected exception: " + ex.message);
-  });
+  var sampleRate = 44100;
+  var duration = 1;
+  var offlineAudioContext = new OfflineAudioContext(1, sampleRate * duration, sampleRate);
+  return offlineAudioContext.startRendering()
+    .then(function(renderedBuffer) {
+      return offlineAudioContext.suspend(duration * 0.2);
+    })
+    .then(function() {
+      return offlineAudioContext.resume();
+    })
+    .catch(function(ex) {
+      assert_unreached("unreached here, get anexpected exception: " + ex.message);
+    });
 }, "Check that  an audio context can be suspended and resumed");
 
 </script>
