@@ -39,12 +39,12 @@ promise_test(function(t) {
   var sampleRate = 44100;
   var duration = 1;
   var offlineAudioContext = new OfflineAudioContext(1, sampleRate * duration, sampleRate);
-  return offlineAudioContext.startRendering()
-    .then(function(renderedBuffer) {
-      return offlineAudioContext.suspend(offlineAudioContext.currentTime + 0.2);
-    })
+  return offlineAudioContext.suspend(0.5)
     .then(function() {
       return offlineAudioContext.resume();
+    })
+    .then(function() {
+      return offlineAudioContext.startRendering()
     })
     .catch(function(ex) {
       assert_unreached("unreached here, get anexpected exception: " + ex.message);
