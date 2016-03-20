@@ -41,7 +41,7 @@ promise_test(function(t) {
   var offlineAudioContext = new OfflineAudioContext(1, sampleRate * duration, sampleRate);
   return offlineAudioContext.startRendering()
     .then(function(renderedBuffer) {
-      return offlineAudioContext.suspend(duration * 0.2);
+      return offlineAudioContext.suspend(offlineAudioContext.currentTime + 0.2);
     })
     .then(function() {
       return offlineAudioContext.resume();
