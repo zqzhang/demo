@@ -27,6 +27,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 
 <meta charset="utf-8">
+<meta name="timeout" content="long">
 <title>WebAudio Test: OfflineAudioContext.suspend() and resume()</title>
 <link rel="author" title="Intel" href="http://www.intel.com">
 <link rel="author" title="Chunyan Wang" href="mailto:chunyanx.wang@intel.com">
@@ -35,20 +36,22 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <script src="../support/testharnessreport.js"></script>
 <div id="log"></div>
 <script>
-promise_test(function(t) {
+async_test(function(t) {
   var sampleRate = 44100;
   var duration = 1;
   var offlineAudioContext = new OfflineAudioContext(1, sampleRate * duration, sampleRate);
-  return offlineAudioContext.suspend(0.5)
-    .then(function() {
+  offlineAudioContext.suspend(0.1)
+    .then(t.step_func(function() {
+      assert_equals(offlineAudioContext.state, "suspended");
       return offlineAudioContext.resume();
-    })
+    }))
     .then(function() {
-      return offlineAudioContext.startRendering()
+      t.done();
     })
-    .catch(function(ex) {
+    .catch(t.step_func(function(ex) {
       assert_unreached("unreached here, get anexpected exception: " + ex.message);
-    });
+    }))
+
 }, "Check that  an audio context can be suspended and resumed");
 
 </script>
