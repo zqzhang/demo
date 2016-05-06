@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Battery Test: each Navigator object has a battery promise, iframe</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<script src="../support/testharness.js"></script>
+<script src="../support/testharnessreport.js"></script>
+<div id="log"></div>
+<iframe src="about:blank"></iframe>
+<script>
+"use strict";
+var iframe = document.querySelector("iframe");
+
+var originalNavigator = iframe.contentWindow.navigator;
+var originalPromise = navigator.getBattery();
+
+promise.then(originalManager => {
+  iframe.onload = () => {
+    // As expected, navigator changes:
+    assert(iframe.contentWindow.navigator !== originalNavigator);
+
+    // But the battery status promise does not!?!
+    assert(iframe.contentWindow.navigator.getBattery() === originalPromise);
+
+    // worse:
+    iframe.contentWindow.navigator.getBattery().then(manager => {
+      // the manager stays the same!!
+      assert(manager === originalManager);
+
+      // which means its prototype chain is broken!?
+      assert(manager.__proto__ !== iframe.contentWindow.BatteryManager.prototype);
+      assert(!(manager instanceof iframe.contentWindow.BatteryManager));
+    });
+  };
+  iframe.src = "http://example.com";
+});
+
+// in fact, it's impossible to every have something be `instanceof BatteryManager`, even
+// without iframe shenanigans, unless you are executing code in the initial about:blank document:
+if (document.URL !== "about:blank" || document.history.length > 0) {
+  navigator.getBattery().then(manager => {
+    assert(!(manager instanceof BatteryManager));
+  });
+}
