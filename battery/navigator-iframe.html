@@ -1,44 +1,33 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>Battery Test: each Navigator object has a battery promise, iframe</title>
+<title>Battery Test: each Navigator object has a battery promise</title>
 <link rel="author" title="Intel" href="http://www.intel.com">
 <script src="../support/testharness.js"></script>
 <script src="../support/testharnessreport.js"></script>
 <div id="log"></div>
 <iframe src="about:blank"></iframe>
 <script>
-async_test(function(t) {
+promise_test(function(t) {
   var iframe = document.querySelector("iframe");
-
-  var originalNavigator = iframe.contentWindow.navigator;
   var originalPromise = navigator.getBattery();
 
-  originalPromise.then(function(originalManager) {
-    iframe.onload = t.step_func(function() {
-      assert_not_equals(iframe.contentWindow.navigator,
-          originalNavigator,
-          'navigator shall change here');
+  return originalPromise.then(function(originalManager) {
+    var promise = iframe.contentWindow.navigator.getBattery();
 
-      assert_not_equals(iframe.contentWindow.navigator.getBattery(),
-          originalPromise,
-          'battery status promise shall be different');
+    assert_true(originalManager instanceof BatteryManager);
+    assert_not_equals(iframe.contentWindow.navigator,
+        navigator,
+        'navigator objects shall be different');
+    assert_not_equals(promise,
+        originalPromise,
+        'battery status promises shall be different');
 
-      iframe.contentWindow.navigator.getBattery().then(function(manager) {
-          t.step(function {
-            assert_not_equals(manager, originalManager,
-                'resolved battery manager shall be different');
-
-            assert_equals(manager.__proto__,
-                iframe.contentWindow.BatteryManager.prototype);
-            assert_true(manager instanceof iframe.contentWindow.BatteryManager);
-
-            t.done();
-          });
-      });
-    });
-    iframe.src = "./example.html";
+    return promise;
+  }).then(function(manager) {
+    assert_equals(manager.__proto__,
+        iframe.contentWindow.BatteryManager.prototype);
+    assert_true(manager instanceof iframe.contentWindow.BatteryManager);
   });
 
-  console.log('document.URL: ' + document.URL);
-  console.log('document.history.length' + document.history.length);
-});
+}, document.title + ', iframe');
+</script>
