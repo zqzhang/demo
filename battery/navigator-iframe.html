@@ -7,37 +7,38 @@
 <div id="log"></div>
 <iframe src="about:blank"></iframe>
 <script>
-"use strict";
-var iframe = document.querySelector("iframe");
+async_test(function(t) {
+  var iframe = document.querySelector("iframe");
 
-var originalNavigator = iframe.contentWindow.navigator;
-var originalPromise = navigator.getBattery();
+  var originalNavigator = iframe.contentWindow.navigator;
+  var originalPromise = navigator.getBattery();
 
-promise.then(originalManager => {
-  iframe.onload = () => {
-    // As expected, navigator changes:
-    assert(iframe.contentWindow.navigator !== originalNavigator);
+  originalPromise.then(function(originalManager) {
+    iframe.onload = t.step_func(function() {
+      assert_not_equals(iframe.contentWindow.navigator,
+          originalNavigator,
+          'navigator shall change here');
 
-    // But the battery status promise does not!?!
-    assert(iframe.contentWindow.navigator.getBattery() === originalPromise);
+      assert_not_equals(iframe.contentWindow.navigator.getBattery(),
+          originalPromise,
+          'battery status promise shall be different');
 
-    // worse:
-    iframe.contentWindow.navigator.getBattery().then(manager => {
-      // the manager stays the same!!
-      assert(manager === originalManager);
+      iframe.contentWindow.navigator.getBattery().then(function(manager) {
+          t.step(function {
+            assert_not_equals(manager, originalManager,
+                'resolved battery manager shall be different');
 
-      // which means its prototype chain is broken!?
-      assert(manager.__proto__ !== iframe.contentWindow.BatteryManager.prototype);
-      assert(!(manager instanceof iframe.contentWindow.BatteryManager));
+            assert_equals(manager.__proto__,
+                iframe.contentWindow.BatteryManager.prototype);
+            assert_true(manager instanceof iframe.contentWindow.BatteryManager);
+
+            t.done();
+          });
+      });
     });
-  };
-  iframe.src = "http://example.com";
-});
-
-// in fact, it's impossible to every have something be `instanceof BatteryManager`, even
-// without iframe shenanigans, unless you are executing code in the initial about:blank document:
-if (document.URL !== "about:blank" || document.history.length > 0) {
-  navigator.getBattery().then(manager => {
-    assert(!(manager instanceof BatteryManager));
+    iframe.src = "./example.html";
   });
-}
+
+  console.log('document.URL: ' + document.URL);
+  console.log('document.history.length' + document.history.length);
+});
